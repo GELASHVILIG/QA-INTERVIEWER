@@ -1049,7 +1049,7 @@ let selectedTrack="manual", DECK=[];
 let mode="practice";
 let qTimer=null, totalTimer=null, typeTimer=null, qLeft=0, qMax=0, elapsed=0;
 let timeouts=0, lookAways=0, soundOn=true, audioCtx=null;
-const TIER_TIME={junior:20, middle:25, senior:35, expert:45}; // seconds per tier
+const TIER_TIME={junior:50, middle:60, senior:70, expert:80}; // seconds per tier (~1 min, scales with difficulty)
 const TIER_RANK={junior:0, middle:1, senior:2, expert:3};
 const results=[]; // {q, picked, correct, ok, lvl}
 
