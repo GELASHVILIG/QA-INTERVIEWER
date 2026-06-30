@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QA Quest · Manual QA Interview Quiz</title>
+<style>
+  :root{
+    --bg-0:#070b1f;
+    --bg-1:#0d1233;
+    --bg-2:#141a44;
+    --panel:rgba(20,26,68,0.55);
+    --panel-2:rgba(12,16,46,0.75);
+    --stroke:rgba(120,150,255,0.22);
+    --stroke-bright:rgba(120,160,255,0.5);
+    --txt:#eaf0ff;
+    --txt-dim:#9aa6d6;
+    --cyan:#46e6ff;
+    --violet:#9b6dff;
+    --pink:#ff6ad5;
+    --green:#3ff0a8;
+    --red:#ff5d7a;
+    --amber:#ffcf5c;
+    --grad:linear-gradient(120deg,#46e6ff 0%,#9b6dff 55%,#ff6ad5 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--txt);
+    background:radial-gradient(1200px 700px at 80% -10%,#1b2160 0%,transparent 60%),
+               radial-gradient(900px 600px at 0% 100%,#23123f 0%,transparent 55%),
+               var(--bg-0);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    overflow-x:hidden;
+  }
+  /* animated star/grid backdrop */
+  .backdrop{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.45;animation:float 16s ease-in-out infinite}
+  .orb.a{width:340px;height:340px;background:#3a6bff;top:-80px;left:-60px}
+  .orb.b{width:300px;height:300px;background:#ff6ad5;bottom:-90px;right:-50px;animation-delay:-6s}
+  .orb.c{width:240px;height:240px;background:#46e6ff;top:40%;right:20%;animation-delay:-3s;opacity:.3}
+  @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+
+  .stage{position:relative;z-index:1;width:100%;max-width:760px}
+  .card{
+    background:var(--panel);
+    border:1px solid var(--stroke);
+    border-radius:24px;
+    backdrop-filter:blur(18px) saturate(140%);
+    -webkit-backdrop-filter:blur(18px) saturate(140%);
+    box-shadow:0 30px 80px rgba(0,0,8,0.55),inset 0 1px 0 rgba(255,255,255,0.06);
+    padding:38px;
+    animation:rise .5s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:6px}
+  .logo{
+    width:42px;height:42px;border-radius:13px;
+    background:var(--grad);
+    display:grid;place-items:center;font-size:22px;
+    box-shadow:0 8px 24px rgba(120,90,255,.5);
+  }
+  .brand h1{font-size:24px;letter-spacing:.5px;font-weight:800}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* START SCREEN */
+  .hero{text-align:center}
+  .hero p.sub{color:var(--txt-dim);margin:14px auto 26px;max-width:520px;line-height:1.6;font-size:15px}
+  .track-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt-dim);margin-bottom:12px}
+  .tracks{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+  .track-btn{
+    font:inherit;cursor:pointer;color:var(--txt);
+    background:var(--panel-2);border:1.5px solid var(--stroke);border-radius:16px;
+    padding:14px 20px;min-width:140px;display:flex;flex-direction:column;align-items:center;gap:4px;
+    font-weight:700;transition:border-color .15s,background .15s,transform .12s;
+  }
+  .track-btn .ico{font-size:24px;margin-bottom:2px}
+  .track-btn small{font-weight:600;font-size:11px;color:var(--txt-dim);letter-spacing:.5px}
+  .track-btn:hover{border-color:var(--stroke-bright);transform:translateY(-2px)}
+  .track-btn.active{
+    border-color:transparent;
+    background:linear-gradient(var(--panel-2),var(--panel-2)) padding-box,var(--grad) border-box;
+    border:2px solid transparent;
+    box-shadow:0 10px 26px rgba(120,90,255,.3);
+  }
+  .track-btn.active small{color:var(--cyan)}
+  .stats-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+  .chip{
+    background:var(--panel-2);border:1px solid var(--stroke);
+    border-radius:14px;padding:14px 18px;min-width:120px;text-align:center;
+  }
+  .chip .n{font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .chip .l{font-size:11px;color:var(--txt-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+  .btn{
+    font:inherit;font-weight:700;cursor:pointer;border:none;
+    border-radius:14px;padding:15px 30px;color:#0a0e26;
+    background:var(--grad);font-size:16px;
+    box-shadow:0 12px 30px rgba(120,90,255,.4);
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(120,90,255,.55)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--stroke-bright);box-shadow:none}
+  .btn.ghost:hover{background:rgba(120,150,255,.1)}
+
+  /* HUD */
+  .hud{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+  .hud .meta{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--txt-dim)}
+  .pill{padding:5px 12px;border-radius:999px;border:1px solid var(--stroke);background:var(--panel-2);font-weight:600;font-size:12px}
+  .pill.cat{color:var(--cyan)}
+  .pill.lvl{font-weight:800;letter-spacing:.5px;font-size:11px}
+  .pill.lvl-junior{color:var(--green);border-color:rgba(63,240,168,.45)}
+  .pill.lvl-middle{color:var(--cyan);border-color:rgba(70,230,255,.45)}
+  .pill.lvl-senior{color:var(--violet);border-color:rgba(155,109,255,.5)}
+  .pill.lvl-expert{color:var(--pink);border-color:rgba(255,106,213,.5)}
+  .score-box{display:flex;gap:8px;align-items:center}
+  .score-box .v{font-weight:800;font-size:18px}
+  .streak{display:flex;align-items:center;gap:5px;color:var(--amber);font-weight:700;font-size:14px;
+    opacity:0;transform:scale(.7);transition:.2s}
+  .streak.on{opacity:1;transform:scale(1)}
+
+  .progress{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:26px}
+  .progress > i{display:block;height:100%;width:0;background:var(--grad);border-radius:999px;transition:width .4s cubic-bezier(.2,.8,.2,1)}
+
+  .qnum{font-size:12px;color:var(--txt-dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+  .question{font-size:20px;line-height:1.5;font-weight:700;margin-bottom:22px}
+
+  .options{display:flex;flex-direction:column;gap:12px}
+  .opt{
+    text-align:left;cursor:pointer;font:inherit;color:var(--txt);
+    background:var(--panel-2);border:1.5px solid var(--stroke);
+    border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;
+    transition:border-color .15s,background .15s,transform .1s;
+    position:relative;
+  }
+  .opt:hover:not(.locked){border-color:var(--stroke-bright);background:rgba(120,150,255,.08);transform:translateX(3px)}
+  .opt .key{
+    flex:0 0 30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    font-weight:800;font-size:14px;background:rgba(120,150,255,.12);border:1px solid var(--stroke);
+  }
+  .opt .txt{flex:1;line-height:1.45}
+  .opt .mark{font-size:18px;opacity:0;transition:.2s;width:20px;text-align:center}
+  .opt.locked{cursor:default}
+  .opt.correct{border-color:var(--green);background:rgba(63,240,168,.14)}
+  .opt.correct .key{background:var(--green);color:#04221a;border-color:var(--green)}
+  .opt.correct .mark{opacity:1;color:var(--green)}
+  .opt.wrong{border-color:var(--red);background:rgba(255,93,122,.13)}
+  .opt.wrong .key{background:var(--red);color:#2a0610;border-color:var(--red)}
+  .opt.wrong .mark{opacity:1;color:var(--red)}
+  .opt.dim{opacity:.5}
+
+  .explain{
+    margin-top:18px;border-radius:14px;padding:16px 18px;
+    border:1px solid var(--stroke);background:var(--panel-2);
+    font-size:14px;line-height:1.6;color:var(--txt-dim);
+    max-height:0;overflow:hidden;opacity:0;transition:.35s;border-left-width:4px;
+  }
+  .explain.show{max-height:320px;opacity:1;margin-top:18px}
+  .explain.good{border-left-color:var(--green)}
+  .explain.bad{border-left-color:var(--red)}
+  .explain b{color:var(--txt)}
+  .explain .tag{font-weight:800;display:block;margin-bottom:4px}
+  .explain.good .tag{color:var(--green)}
+  .explain.bad .tag{color:var(--red)}
+
+  .footer-row{display:flex;justify-content:flex-end;margin-top:22px}
+  .next{opacity:0;pointer-events:none;transition:.25s}
+  .next.show{opacity:1;pointer-events:auto}
+
+  /* RESULTS */
+  .result{text-align:center}
+  .ring{position:relative;width:180px;height:180px;margin:8px auto 18px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:grid;place-items:center;flex-direction:column}
+  .ring .pct b{font-size:42px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;display:block;line-height:1}
+  .ring .pct span{font-size:12px;color:var(--txt-dim);letter-spacing:1px;text-transform:uppercase}
+  .grade{font-size:28px;font-weight:800;margin-bottom:6px}
+  .result .verdict{color:var(--txt-dim);max-width:480px;margin:0 auto 26px;line-height:1.6}
+  .result-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+  .result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  .review{margin-top:30px;text-align:left}
+  .review h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--txt-dim);margin-bottom:14px}
+  .rev-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;
+    background:var(--panel-2);border:1px solid var(--stroke);margin-bottom:9px;font-size:13.5px;line-height:1.5}
+  .rev-item .ic{flex:0 0 22px;font-size:16px;margin-top:1px}
+  .rev-item.ok .ic{color:var(--green)}
+  .rev-item.no .ic{color:var(--red)}
+  .rev-item .q b{color:var(--txt)}
+  .rev-item .a{color:var(--txt-dim);margin-top:3px}
+  .rev-item .a .corr{color:var(--green)}
+
+  /* HISTORY */
+  .history{margin-top:30px;text-align:left;border-top:1px solid var(--stroke);padding-top:22px}
+  .history-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .history-head h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--txt-dim)}
+  .link-btn{background:none;border:none;color:var(--txt-dim);font:inherit;font-size:12px;cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px;transition:color .15s}
+  .link-btn:hover{color:var(--red)}
+  .hist-best{font-size:13px;color:var(--txt-dim);margin-bottom:14px}
+  .hist-best b{color:var(--amber);font-size:15px}
+  .hist-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
+    background:var(--panel-2);border:1px solid var(--stroke);margin-bottom:8px;font-size:13px}
+  .hist-row .rank{flex:0 0 26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    font-weight:800;font-size:12px;background:rgba(120,150,255,.12);border:1px solid var(--stroke);color:var(--txt-dim)}
+  .hist-row.top .rank{background:var(--grad);color:#0a0e26;border-color:transparent}
+  .hist-row .when{flex:1;color:var(--txt-dim)}
+  .tracktag{margin-left:8px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;
+    background:rgba(120,150,255,.12);border:1px solid var(--stroke);color:var(--txt-dim);vertical-align:middle}
+  .hist-row .pct{font-weight:800;font-size:15px}
+  .hist-row .det{color:var(--txt-dim);font-size:12px;min-width:84px;text-align:right}
+  .hist-row .pts{color:var(--cyan);font-weight:700;font-size:12px;min-width:70px;text-align:right}
+  .hist-empty{color:var(--txt-dim);font-size:13px;font-style:italic}
+  .newbadge{display:inline-block;margin-left:8px;font-size:10px;font-weight:800;letter-spacing:.5px;
+    padding:2px 7px;border-radius:999px;background:var(--grad);color:#0a0e26;vertical-align:middle}
+
+  /* EXPERTISE ESTIMATION */
+  .level-label{font-size:11px;text-transform:uppercase;letter-spacing:2.5px;color:var(--txt-dim);margin-bottom:4px}
+  .grade.level-trainee{color:var(--txt-dim)}
+  .grade.level-junior{color:var(--green)}
+  .grade.level-middle{color:var(--cyan)}
+  .grade.level-senior{color:var(--violet)}
+  .grade.level-expert{color:var(--pink)}
+  .tiers{max-width:500px;margin:4px auto 26px;text-align:left}
+  .tiers-cap{font-size:12px;color:var(--txt-dim);line-height:1.5;margin-bottom:16px;text-align:center}
+  .tier-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .tier-row.dim{opacity:.4}
+  .tier-name{flex:0 0 74px;font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px}
+  .tier-name::before{content:"";width:9px;height:9px;border-radius:50%;display:inline-block}
+  .lvldot-junior::before{background:var(--green)}
+  .lvldot-middle::before{background:var(--cyan)}
+  .lvldot-senior::before{background:var(--violet)}
+  .lvldot-expert::before{background:var(--pink)}
+  .tier-bar{flex:1;height:9px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+  .tier-bar > i{display:block;height:100%;border-radius:999px}
+  .lvlfill-junior{background:var(--green)}
+  .lvlfill-middle{background:var(--cyan)}
+  .lvlfill-senior{background:var(--violet)}
+  .lvlfill-expert{background:var(--pink)}
+  .tier-val{flex:0 0 100px;text-align:right;font-size:12px;color:var(--txt-dim);font-weight:600}
+  .histlv{margin-left:7px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;
+    vertical-align:middle;border:1px solid currentColor;letter-spacing:.5px}
+
+  .hide{display:none!important}
+
+  /* confetti */
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+  .confetti i{position:absolute;width:9px;height:14px;top:-20px;opacity:.9;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(620deg);opacity:.7}}
+
+  /* ===== INTERVIEW PRESSURE MODE ===== */
+  .track-btn.mode-danger.active{
+    background:linear-gradient(var(--panel-2),var(--panel-2)) padding-box,
+               linear-gradient(120deg,#ff5d7a,#ff9d3c) border-box;
+    box-shadow:0 10px 26px rgba(255,93,122,.32);
+  }
+  .track-btn.mode-danger.active small{color:var(--red)}
+  .iv-only{display:none}
+  body.interview .iv-only{display:flex}
+  body.interview .practice-only{display:none}
+  body.interview #screen-quiz{border-color:rgba(255,93,122,.4);box-shadow:0 30px 80px rgba(40,0,8,0.6),inset 0 1px 0 rgba(255,255,255,0.06)}
+  .iv-rec{align-items:center;gap:10px}
+  .iv-rec .rec{color:var(--red);font-weight:800;font-size:12px;letter-spacing:1px;animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+  .iv-rec .clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:16px;color:var(--txt)}
+  .mute{background:none;border:none;cursor:pointer;font-size:15px;opacity:.85;line-height:1}
+  .interviewer{align-items:flex-start;gap:14px;background:var(--panel-2);border:1px solid var(--stroke);
+     border-radius:16px;padding:14px 16px;margin-bottom:18px}
+  .iv-avatar{flex:0 0 46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:24px;
+     background:linear-gradient(135deg,#1c2350,#3a1d50);border:1px solid var(--stroke-bright);transition:transform .18s}
+  .iv-avatar.react{transform:scale(1.12) rotate(-4deg)}
+  .iv-body{flex:1;min-width:0}
+  .iv-name{font-size:12px;color:var(--cyan);font-weight:700;letter-spacing:.3px;margin-bottom:4px}
+  .iv-text{font-size:14px;line-height:1.5;color:var(--txt);min-height:21px}
+  .qtimer{position:relative;align-items:center;height:34px;border-radius:10px;background:rgba(255,255,255,.06);
+     overflow:hidden;margin-bottom:18px;border:1px solid var(--stroke)}
+  .qtimer > i{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,var(--green),var(--cyan));
+     transition:width 1s linear,background .4s}
+  .qtimer.warn > i{background:linear-gradient(90deg,var(--amber),#ff9d3c)}
+  .qtimer.danger > i{background:linear-gradient(90deg,var(--red),#ff2d55)}
+  .qtimer #qtimer-num{position:relative;z-index:1;margin:0 auto;font-weight:800;font-size:14px;color:#06122a;
+     font-variant-numeric:tabular-nums}
+  .qtimer.danger{animation:shake .35s infinite}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+  .vignette{position:fixed;inset:0;pointer-events:none;z-index:40;opacity:0;transition:opacity .3s;
+     box-shadow:inset 0 0 160px 44px rgba(255,40,80,.55)}
+  .vignette.on{opacity:1;animation:pulseV 1s ease-in-out infinite}
+  @keyframes pulseV{0%,100%{opacity:.5}50%{opacity:.92}}
+  .opt.picked{border-color:var(--cyan);background:rgba(70,230,255,.14)}
+  .opt.picked .key{background:var(--cyan);color:#04221a;border-color:var(--cyan)}
+
+  @media (max-width:560px){
+    .card{padding:24px}
+    .question{font-size:18px}
+    .brand h1{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="backdrop"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+
+<div class="stage">
+  <!-- ===== START ===== -->
+  <div class="card" id="screen-start">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo">🛰️</div>
+        <h1>QA <span class="grad-text">Quest</span></h1>
+      </div>
+      <p class="sub">A mini-game to sharpen you for a <b>Manual QA</b> interview. Answer, reveal the truth instantly, learn the why, and beat your high score. 🚀</p>
+      <div class="track-label">Select mode</div>
+      <div class="tracks" id="modes">
+        <button class="track-btn active" data-mode="practice"><span class="ico">🧘</span>Practice<small>Relaxed · learn as you go</small></button>
+        <button class="track-btn mode-danger" data-mode="interview"><span class="ico">🎙️</span>Interview Pressure<small>Timed · no feedback · graded</small></button>
+      </div>
+      <div class="track-label">Choose your track</div>
+      <div class="tracks" id="tracks">
+        <button class="track-btn active" data-track="manual"><span class="ico">🧪</span>Manual QA<small id="t-manual">0 Qs</small></button>
+        <button class="track-btn" data-track="auto"><span class="ico">🤖</span>Automation<small id="t-auto">0 Qs</small></button>
+        <button class="track-btn" data-track="all"><span class="ico">🌐</span>All<small id="t-all">0 Qs</small></button>
+      </div>
+      <div class="stats-row">
+        <div class="chip"><div class="n" id="s-count">40</div><div class="l">Questions</div></div>
+        <div class="chip"><div class="n">Mixed</div><div class="l">MC + True/False</div></div>
+        <div class="chip"><div class="n">∞</div><div class="l">Retries</div></div>
+      </div>
+      <button class="btn" id="btn-start">Start the Quest →</button>
+      <div class="history hide" id="start-history">
+        <div class="history-head">
+          <h3>📊 Your Score History</h3>
+          <button class="link-btn" id="btn-clear-hist">Clear</button>
+        </div>
+        <div class="hist-best" id="hist-best"></div>
+        <div id="hist-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div class="card hide" id="screen-quiz">
+    <div class="hud">
+      <div class="meta">
+        <span class="pill cat" id="hud-cat">Fundamentals</span>
+        <span class="pill lvl lvl-middle" id="hud-lvl">MIDDLE</span>
+        <span class="streak practice-only" id="hud-streak">🔥 <span id="streak-n">0</span></span>
+      </div>
+      <div class="score-box practice-only"><span style="color:var(--txt-dim);font-size:12px">SCORE</span><span class="v" id="hud-score">0</span></div>
+      <div class="iv-rec iv-only" id="hud-rec">
+        <button class="mute" id="btn-mute" title="Mute / unmute">🔊</button>
+        <span class="rec">● REC</span>
+        <span class="clock" id="iv-clock">00:00</span>
+      </div>
+    </div>
+    <div class="interviewer iv-only" id="interviewer">
+      <div class="iv-avatar" id="iv-avatar">🧑‍💼</div>
+      <div class="iv-body">
+        <div class="iv-name">Alex Chen · Senior QA Lead</div>
+        <div class="iv-text" id="iv-text"></div>
+      </div>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="qtimer iv-only" id="qtimer"><i id="qtimer-fill"></i><span id="qtimer-num">20</span></div>
+    <div class="qnum" id="qnum">Question 1 of 40</div>
+    <div class="question" id="qtext"></div>
+    <div class="options" id="opts"></div>
+    <div class="explain" id="explain"></div>
+    <div class="footer-row practice-only">
+      <button class="btn next" id="btn-next">Next →</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="card hide result" id="screen-result">
+    <div class="brand"><div class="logo">🏆</div><h1 id="res-h1">Mission <span class="grad-text">Complete</span></h1></div>
+    <div class="ring">
+      <svg width="180" height="180">
+        <circle cx="90" cy="90" r="78" stroke="rgba(255,255,255,.08)" stroke-width="14" fill="none"/>
+        <circle id="ring-fg" cx="90" cy="90" r="78" stroke="url(#g)" stroke-width="14" fill="none"
+          stroke-linecap="round" stroke-dasharray="490" stroke-dashoffset="490"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#46e6ff"/><stop offset="0.55" stop-color="#9b6dff"/><stop offset="1" stop-color="#ff6ad5"/>
+        </linearGradient></defs>
+      </svg>
+      <div class="pct"><b id="res-pct">0%</b></div>
+    </div>
+    <div class="level-label">Estimated Expertise Level</div>
+    <div class="grade level-middle" id="res-grade">—</div>
+    <p class="verdict" id="res-verdict"></p>
+    <div class="tiers" id="tiers"></div>
+    <div class="result-stats">
+      <div class="chip"><div class="n" id="res-correct">0</div><div class="l">Correct</div></div>
+      <div class="chip"><div class="n" id="res-total">40</div><div class="l">Total</div></div>
+      <div class="chip"><div class="n" id="res-best">0</div><div class="l">Best Streak</div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn" id="btn-retry">Play Again ↻</button>
+      <button class="btn ghost" id="btn-review">Review Answers</button>
+    </div>
+    <div class="history" id="result-history">
+      <div class="history-head">
+        <h3>📊 Score History</h3>
+        <button class="link-btn" id="btn-clear-hist2">Clear</button>
+      </div>
+      <div class="hist-best" id="hist-best2"></div>
+      <div id="hist-list2"></div>
+    </div>
+    <div class="review hide" id="review">
+      <h3>Answer Review</h3>
+      <div id="review-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="vignette" id="vignette"></div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+/* ================= QUESTION BANK ================= */
+const QUESTIONS = [
+  {lvl:"junior", cat:"Fundamentals", type:"mc",
+   q:"What is the primary goal of software testing?",
+   options:["To prove the software has zero defects","To find defects and reduce the risk of failure in operation","To make the development team look productive","To replace the need for requirements"],
+   answer:1,
+   exp:"Testing aims to find defects and provide information about quality so risk can be reduced. It cannot prove the absence of all defects — that's a core testing principle."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"tf",
+   q:"Exhaustive testing — testing every possible input and combination — is achievable for most real applications.",
+   options:["True","False"],
+   answer:1,
+   exp:"Exhaustive testing is impossible for any non-trivial system. Instead we use risk and prioritization to focus effort — one of the seven testing principles."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"mc",
+   q:"Which statement best describes the difference between verification and validation?",
+   options:["They are the same thing","Verification = 'Are we building it right?'; Validation = 'Are we building the right thing?'","Verification is done by users; validation by developers","Validation always happens before verification"],
+   answer:1,
+   exp:"Verification checks the product against its specs (built it right). Validation checks it meets the user's actual needs (built the right thing)."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"mc",
+   q:"What is the difference between an error, a defect, and a failure?",
+   options:["They are interchangeable terms","Error = human mistake; Defect = the flaw in the code/doc; Failure = the system behaving incorrectly at runtime","Failure happens first, then defect, then error","Defect is found by users; error by testers"],
+   answer:1,
+   exp:"A person makes an error (mistake), which introduces a defect (bug) in the artifact, which can cause a failure when executed."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"tf",
+   q:"'Absence of defects' guarantees that a product will be successful and meet user needs.",
+   options:["True","False"],
+   answer:1,
+   exp:"The 'absence-of-errors fallacy': even a bug-free system fails if it doesn't meet user needs or solve the right problem."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"mc",
+   q:"The 'defect clustering' principle suggests that:",
+   options:["Defects are spread evenly across all modules","A small number of modules usually contain most of the defects","Every module has exactly the same defect density","Clustering only applies to performance testing"],
+   answer:1,
+   exp:"Defects tend to concentrate in a few modules (Pareto-like). Testers use this to focus effort where bugs are most likely."},
+
+  {lvl:"junior", cat:"Fundamentals", type:"mc",
+   q:"What does the 'pesticide paradox' refer to in testing?",
+   options:["Bugs become immune to fixes over time","Running the same tests repeatedly stops finding new defects, so tests must be reviewed and updated","Test data contaminates production","Automated tests kill manual tests"],
+   answer:1,
+   exp:"Like pests adapting to pesticide, repeated identical tests stop catching new bugs. Tests must be regularly revised and new cases added."},
+
+  {lvl:"middle", cat:"Test Design", type:"mc",
+   q:"For an input field that accepts ages 18–60, which values best represent Boundary Value Analysis?",
+   options:["18, 30, 60","17, 18, 60, 61","1, 100, 1000","Only 18 and 60"],
+   answer:1,
+   exp:"BVA tests at and just outside boundaries: 17/18 (lower) and 60/61 (upper). Bugs love edges."},
+
+  {lvl:"middle", cat:"Test Design", type:"mc",
+   q:"Using Equivalence Partitioning for the same 18–60 age field, how many partitions exist and what are they?",
+   options:["One: 18–60","Two: valid and invalid","Three: <18 (invalid), 18–60 (valid), >60 (invalid)","Sixty: one per age"],
+   answer:2,
+   exp:"Three partitions: below range (invalid), within range (valid), above range (invalid). Pick one representative value from each."},
+
+  {lvl:"middle", cat:"Test Design", type:"mc",
+   q:"A decision table is the most useful technique when:",
+   options:["Testing a single numeric range","Behavior depends on combinations of multiple conditions/rules","Measuring page load time","There are no conditions at all"],
+   answer:1,
+   exp:"Decision tables systematically capture combinations of conditions and their resulting actions — ideal for complex business logic."},
+
+  {lvl:"middle", cat:"Test Design", type:"mc",
+   q:"Which technique models a system as states and transitions (e.g., logged out → logging in → logged in)?",
+   options:["Boundary Value Analysis","State Transition Testing","Load Testing","Exploratory smoke testing"],
+   answer:1,
+   exp:"State transition testing covers states, events, transitions, and invalid transitions — great for workflows, sessions, and UI flows."},
+
+  {lvl:"middle", cat:"Test Design", type:"tf",
+   q:"Black-box testing requires knowledge of the internal code structure to design test cases.",
+   options:["True","False"],
+   answer:1,
+   exp:"Black-box testing is based on requirements/specs and behavior, not internal code. White-box testing uses internal structure."},
+
+  {lvl:"middle", cat:"Test Design", type:"mc",
+   q:"What is a good characteristic of a well-written test case?",
+   options:["It is vague so it covers many scenarios","It has clear steps, specific test data, and an expected result that is verifiable","It never includes preconditions","It only a senior tester can understand"],
+   answer:1,
+   exp:"Good test cases are clear, repeatable, independent, and have a precise expected result so any tester can run and judge them."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"Put these test levels in the typical order from smallest to largest scope:",
+   options:["System → Integration → Unit → Acceptance","Unit → Integration → System → Acceptance","Acceptance → System → Unit → Integration","Integration → Unit → Acceptance → System"],
+   answer:1,
+   exp:"Unit (single component) → Integration (components together) → System (whole product) → Acceptance (meets user/business needs)."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"Smoke testing is best described as:",
+   options:["Exhaustive testing of every feature","A quick check that critical core functions work before deeper testing","Testing only the UI colors","Performance testing under heavy load"],
+   answer:1,
+   exp:"Smoke (build verification) testing confirms the build is stable enough for further testing — if it 'smokes', reject it early."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"What is the difference between sanity testing and regression testing?",
+   options:["They are identical","Sanity = narrow check that a specific fix/feature works; Regression = broad check that existing functionality still works after changes","Sanity is automated; regression is always manual","Regression only runs before the first release"],
+   answer:1,
+   exp:"Sanity is a focused, quick check of a specific change. Regression re-tests existing features to ensure new changes didn't break them."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"Re-testing (confirmation testing) specifically means:",
+   options:["Testing on a new device","Re-running the test that originally failed to confirm a defect is now fixed","Testing every feature again","Testing without any defect reports"],
+   answer:1,
+   exp:"Re-testing confirms a previously failing test now passes after a fix. Regression checks nothing else broke — they're complementary."},
+
+  {lvl:"junior", cat:"Test Levels", type:"tf",
+   q:"Alpha testing is performed by real end-users at their own location, while beta testing is done in-house.",
+   options:["True","False"],
+   answer:1,
+   exp:"It's the reverse: Alpha is done in-house (by internal staff/testers), Beta is done by real users in their own environment."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"Which is a NON-functional test type?",
+   options:["Verifying login accepts valid credentials","Checking the checkout calculates totals correctly","Measuring how the app behaves with 5,000 concurrent users","Confirming a required field shows an error when empty"],
+   answer:2,
+   exp:"Performance/load is non-functional (how well it works). The others test what the system does (functional)."},
+
+  {lvl:"junior", cat:"Test Levels", type:"mc",
+   q:"Usability, performance, security, and compatibility testing all belong to which category?",
+   options:["Functional testing","Non-functional testing","Unit testing","Static testing"],
+   answer:1,
+   exp:"Non-functional testing evaluates quality attributes — the 'how' (speed, security, ease of use) rather than the 'what'."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"mc",
+   q:"What is the correct typical bug life cycle order?",
+   options:["New → Assigned → Open → Fixed → Retest → Closed","Closed → Fixed → New → Open","Open → Closed → New → Fixed","Fixed → New → Assigned → Open"],
+   answer:0,
+   exp:"A defect is logged (New), Assigned to a dev, worked (Open), Fixed, Retested by QA, then Closed (or Reopened if it fails)."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"mc",
+   q:"What is the difference between Severity and Priority?",
+   options:["They mean the same thing","Severity = technical impact of the bug; Priority = how urgently it should be fixed (business)","Priority is set by developers; severity by managers only","Severity always equals priority"],
+   answer:1,
+   exp:"Severity is the impact on the system; Priority is the urgency to fix. A typo on the home page can be low severity but high priority."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"mc",
+   q:"A company logo is misspelled on the landing page. The best classification is usually:",
+   options:["High severity, low priority","Low severity, high priority","High severity, high priority","Low severity, low priority"],
+   answer:1,
+   exp:"It doesn't break functionality (low severity) but is highly visible/brand-damaging, so it should be fixed fast (high priority)."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"mc",
+   q:"A reported bug is marked 'Cannot Reproduce'. The most professional next step is to:",
+   options:["Close it immediately and move on","Provide more detail — exact steps, environment, build, data, screenshots/video, and logs","Reopen it repeatedly without changes","Blame the developer"],
+   answer:1,
+   exp:"Add reproducibility detail: precise steps, environment/build, test data, frequency, and evidence. Many 'no-repro' bugs are environment or data specific."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"tf",
+   q:"A defect marked 'Deferred' means it has been fixed and verified.",
+   options:["True","False"],
+   answer:1,
+   exp:"'Deferred' means the fix is postponed to a later release (valid bug, just not now). 'Closed/Verified' means fixed and confirmed."},
+
+  {lvl:"junior", cat:"Bug Lifecycle", type:"mc",
+   q:"Which item is essential in a high-quality bug report?",
+   options:["The developer's home address","Clear steps to reproduce, expected vs. actual result, environment, and severity","Only the bug title","A guess about which line of code is wrong"],
+   answer:1,
+   exp:"Reproduction steps, expected vs actual, environment/build, severity/priority, and evidence make a report actionable."},
+
+  {lvl:"middle", cat:"SDLC & Agile", type:"mc",
+   q:"In the V-model, what is the relationship between development and testing activities?",
+   options:["Testing only happens at the very end","Each development phase has a corresponding test level planned in parallel","There is no testing in the V-model","Testing replaces development"],
+   answer:1,
+   exp:"The V-model pairs each dev phase with a test level (e.g., requirements ↔ acceptance tests), so test design starts early."},
+
+  {lvl:"middle", cat:"SDLC & Agile", type:"mc",
+   q:"What does 'shift-left' testing mean?",
+   options:["Moving the test team to a different office","Involving testing earlier in the lifecycle to catch defects sooner","Only testing after release","Shifting bugs to the next sprint"],
+   answer:1,
+   exp:"Shift-left means testing activities (reviews, early test design, dev collaboration) start early, where defects are cheaper to fix."},
+
+  {lvl:"middle", cat:"SDLC & Agile", type:"mc",
+   q:"In Scrum, what is a key QA contribution to the 'Definition of Done'?",
+   options:["Nothing — DoD is only for developers","Ensuring acceptance criteria are tested and quality gates (e.g., tests passed, bugs triaged) are met","Writing the product backlog alone","Approving budgets"],
+   answer:1,
+   exp:"QA helps define and enforce DoD: acceptance criteria verified, tests executed/passed, and no critical open defects."},
+
+  {lvl:"middle", cat:"SDLC & Agile", type:"tf",
+   q:"In Agile, testing is a separate phase that only begins after all development is finished.",
+   options:["True","False"],
+   answer:1,
+   exp:"In Agile, testing is continuous and integrated within each sprint, not a separate end phase. Testers engage from the start."},
+
+  {lvl:"middle", cat:"SDLC & Agile", type:"mc",
+   q:"What is a 'user story' acceptance criteria primarily used for by a QA?",
+   options:["Estimating developer salaries","Defining the conditions that must be true for the story to be accepted — the basis for test cases","Replacing the entire test plan","Deciding the UI color scheme"],
+   answer:1,
+   exp:"Acceptance criteria define 'done' for a story and are the foundation for deriving test cases and acceptance tests."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"What is the difference between a Test Plan and a Test Strategy?",
+   options:["They are the same document","Test Strategy = high-level org/project approach; Test Plan = detailed scope, schedule, resources for a specific project","Test Plan is high-level; strategy is detailed steps","Neither is a real document"],
+   answer:1,
+   exp:"Strategy is the broad approach (often org-wide). The plan is a specific, detailed document: scope, schedule, resources, risks, deliverables."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"What does a Requirements Traceability Matrix (RTM) ensure?",
+   options:["That every requirement maps to test cases (and gaps are visible)","That developers write more code","That bugs are auto-fixed","That tests run faster"],
+   answer:0,
+   exp:"An RTM links requirements to test cases, ensuring full coverage and making missing or untested requirements visible."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"Which set are common entry criteria for starting test execution?",
+   options:["The release is already in production","Test environment ready, test data available, build deployed, and test cases prepared","All bugs are already closed","The team has gone home"],
+   answer:1,
+   exp:"Entry criteria (e.g., stable build, environment, data, approved test cases) must be met before execution begins. Exit criteria end it."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"Risk-based testing means:",
+   options:["Avoiding testing risky features","Prioritizing test effort based on likelihood and impact of failures","Testing only on Fridays","Letting developers decide all tests"],
+   answer:1,
+   exp:"Risk-based testing focuses limited time on the areas where failure is most likely and/or most damaging."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"tf",
+   q:"Static testing involves executing the code, while dynamic testing only reviews documents.",
+   options:["True","False"],
+   answer:1,
+   exp:"It's the opposite: static testing (reviews, walkthroughs, static analysis) does NOT execute code; dynamic testing runs the software."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"What is exploratory testing?",
+   options:["Random clicking with no thought","Simultaneous learning, test design, and execution — guided by the tester's skill and observations","Only following scripted test cases","A type of automated load test"],
+   answer:1,
+   exp:"Exploratory testing combines learning, designing, and executing tests at once. It's structured and skilled — not aimless clicking."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"When should you decide a test case is a good candidate for automation?",
+   options:["When it's run rarely and changes constantly","When it's stable, repetitive, run frequently (e.g., regression), and has predictable results","When it's a one-time exploratory check","Never — automation is always wrong"],
+   answer:1,
+   exp:"Automate stable, repetitive, high-value, frequently run tests. Exploratory and rapidly changing tests stay manual."},
+
+  {lvl:"senior", cat:"Process & Strategy", type:"mc",
+   q:"You have only 2 hours before a release to test a large feature. The best approach is to:",
+   options:["Test everything slowly and miss the deadline","Use risk-based prioritization: cover critical paths and high-risk areas first","Skip testing entirely","Only test the easiest cases"],
+   answer:1,
+   exp:"With limited time, prioritize by risk and business impact — verify critical flows first and clearly communicate coverage/risk."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"tf",
+   q:"A test case can pass even if the actual result does not match the expected result.",
+   options:["True","False"],
+   answer:1,
+   exp:"A test passes only when actual result equals expected result. Any mismatch is a fail (and usually a defect to log)."},
+
+  {lvl:"middle", cat:"Process & Strategy", type:"mc",
+   q:"What is the main purpose of a test summary / closure report?",
+   options:["To assign blame for bugs","To communicate testing results, coverage, open risks, and readiness for release to stakeholders","To replace the test plan","To list developer vacations"],
+   answer:1,
+   exp:"The closure report summarizes what was tested, results, defect status, residual risk, and a quality/readiness recommendation."},
+
+  {lvl:"senior", cat:"Coverage & Metrics", type:"mc",
+   q:"100% statement coverage has been achieved on a function with an 'if' but no 'else'. What is still guaranteed to be untested?",
+   options:["Nothing — statement coverage covers everything","The path where the condition is false (the implicit else / branch)","The function's return type","The variable names"],
+   answer:1,
+   exp:"Statement coverage only requires each line to execute once. The false branch of an if-without-else is never exercised — branch (decision) coverage is stronger and would catch it."},
+
+  {lvl:"senior", cat:"Coverage & Metrics", type:"mc",
+   q:"For the decision (A && B), which coverage criterion requires showing that EACH condition independently affects the outcome?",
+   options:["Statement coverage","Branch/decision coverage","MC/DC (Modified Condition/Decision Coverage)","Smoke coverage"],
+   answer:2,
+   exp:"MC/DC requires each Boolean sub-condition to independently change the decision's result. It's mandated in safety-critical domains (e.g., DO-178C avionics)."},
+
+  {lvl:"expert", cat:"Coverage & Metrics", type:"mc",
+   q:"A module has a cyclomatic complexity of 8. What does this most directly tell a tester?",
+   options:["There are 8 bugs in the module","There are at least 8 linearly independent paths, so ≥8 test cases are needed for full path coverage","The code runs 8x slower","8 developers wrote it"],
+   answer:1,
+   exp:"Cyclomatic complexity = number of linearly independent paths and is a lower bound on the test cases needed for basis-path coverage. High values flag risky, hard-to-test code."},
+
+  {lvl:"senior", cat:"Coverage & Metrics", type:"mc",
+   q:"Defect Removal Efficiency (DRE) is calculated as:",
+   options:["Defects found in testing ÷ total lines of code","Defects removed before release ÷ (defects before release + defects found by users after release)","Number of testers ÷ number of developers","Bugs fixed ÷ bugs reopened"],
+   answer:1,
+   exp:"DRE = defects found internally ÷ (internal + escaped to production). Closer to 100% means your process caught defects before users did."},
+
+  {lvl:"senior", cat:"Coverage & Metrics", type:"tf",
+   q:"A high code-coverage percentage proves the tests are high quality and the software is correct.",
+   options:["True","False"],
+   answer:1,
+   exp:"Coverage measures what code ran, not whether assertions actually verify behavior. You can have 100% coverage with weak/no assertions — coverage is necessary insight, not proof of quality."},
+
+  {lvl:"senior", cat:"Advanced Design", type:"mc",
+   q:"A form has 4 parameters, each with 3 possible values (81 full combinations). Pairwise (all-pairs) testing helps by:",
+   options:["Testing all 81 combinations faster","Covering every pair of parameter values in far fewer tests, since many defects stem from 2-way interactions","Removing the need to test at all","Testing only one value per parameter"],
+   answer:1,
+   exp:"Pairwise testing covers all two-way value combinations in a small number of cases (often ~9-15 here), based on the empirical finding that most interaction defects involve only two factors."},
+
+  {lvl:"expert", cat:"Advanced Design", type:"mc",
+   q:"The 'test oracle problem' refers to the difficulty of:",
+   options:["Finding enough test data","Determining what the correct expected result actually should be for a given input","Running tests in parallel","Choosing an automation tool"],
+   answer:1,
+   exp:"An oracle is the source of truth for expected results. For complex/AI/scientific systems, knowing the correct output is itself hard — that's the oracle problem."},
+
+  {lvl:"senior", cat:"Advanced Design", type:"mc",
+   q:"Which is the best example of 'error guessing' as a structured technique?",
+   options:["Randomly clicking buttons","Using experience to target likely failure points: empty inputs, zero, nulls, special characters, max lengths, duplicate submits","Following a scripted test verbatim","Measuring CPU usage"],
+   answer:1,
+   exp:"Error guessing leverages a tester's experience of where bugs commonly hide (nulls, boundaries, special chars, concurrency) — informal but powerful, often paired with checklists."},
+
+  {lvl:"senior", cat:"Advanced Design", type:"mc",
+   q:"In integration testing, what is the difference between a 'stub' and a 'driver'?",
+   options:["They are the same","A stub replaces a called (lower-level) component; a driver replaces a calling (higher-level) component","A stub is hardware; a driver is software","A driver is always a mock"],
+   answer:1,
+   exp:"Stubs simulate components your code calls (used in top-down). Drivers simulate components that call your code (used in bottom-up integration)."},
+
+  {lvl:"senior", cat:"Advanced Design", type:"mc",
+   q:"A test passes and fails intermittently with no code change (a 'flaky' test). The LEAST likely root cause is:",
+   options:["Race conditions / timing or async waits","Shared or order-dependent test data and state","Reliance on real time, network, or external services","The expected result is mathematically wrong every run"],
+   answer:3,
+   exp:"Flakiness comes from non-determinism: timing/races, shared state, test order, external dependencies. A consistently wrong expected value would fail every time, not intermittently."},
+
+  {lvl:"senior", cat:"API & Data", type:"mc",
+   q:"An API returns HTTP 200 with a JSON body {\"error\":\"invalid id\"} for a bad request. As a QA, the correct assessment is:",
+   options:["Perfect — 200 means success","A defect: a client error should return a 4xx status (e.g., 400/404), not 200; the status contradicts the body","Status codes don't matter for REST","It should return 500"],
+   answer:1,
+   exp:"Returning 200 for an error breaks REST semantics and confuses clients/monitoring. Client errors belong in 4xx; the status and body should agree."},
+
+  {lvl:"senior", cat:"API & Data", type:"mc",
+   q:"In REST, which property means that making the same request multiple times has the same effect as making it once?",
+   options:["Statefulness","Idempotency","Concurrency","Pagination"],
+   answer:1,
+   exp:"Idempotency: GET, PUT, DELETE should be idempotent (repeats don't change the outcome). POST typically is not — worth testing for duplicate-submit bugs."},
+
+  {lvl:"senior", cat:"API & Data", type:"mc",
+   q:"You need to verify that an order in the UI was actually persisted correctly. The most reliable check is to:",
+   options:["Trust the UI confirmation message","Query the database (e.g., SELECT) and assert the stored values match what was entered","Refresh the page only","Ask the developer"],
+   answer:1,
+   exp:"Back-end verification via SQL confirms data integrity beyond the UI layer — the UI can show success while persistence silently fails."},
+
+  {lvl:"senior", cat:"API & Data", type:"tf",
+   q:"Using real customer production data (names, emails, card numbers) in a test environment is an acceptable default practice.",
+   options:["True","False"],
+   answer:1,
+   exp:"Using real PII in test environments risks privacy/compliance violations (GDPR, PCI-DSS). Use masked, anonymized, or synthetic test data instead."},
+
+  {lvl:"senior", cat:"Non-Functional", type:"mc",
+   q:"What is the key difference between load testing and stress testing?",
+   options:["They are identical","Load = behavior under expected/peak load; Stress = pushing beyond limits to find the breaking point and recovery behavior","Load tests security; stress tests UI","Stress testing is only for databases"],
+   answer:1,
+   exp:"Load testing validates performance at expected volumes; stress testing deliberately exceeds capacity to observe failure modes and graceful recovery."},
+
+  {lvl:"senior", cat:"Non-Functional", type:"mc",
+   q:"In performance testing, 'throughput' and 'latency' respectively measure:",
+   options:["Errors per hour and uptime","Requests handled per unit time, and the time to process a single request","Memory and disk usage","Number of testers and bugs"],
+   answer:1,
+   exp:"Throughput = volume of work per unit time (e.g., req/sec). Latency = response time per request. A system can have high throughput yet poor (high) latency."},
+
+  {lvl:"senior", cat:"Non-Functional", type:"mc",
+   q:"A login form passes the username straight into a SQL query. The most relevant security test is:",
+   options:["Color contrast checking","SQL injection (e.g., entering ' OR '1'='1) to see if input is unsafely concatenated into queries","Testing the logo size","Spell-checking the labels"],
+   answer:1,
+   exp:"Unparameterized queries are vulnerable to SQL injection (OWASP Top 10). Test with injection payloads; the fix is parameterized queries / prepared statements."},
+
+  {lvl:"junior", track:"auto", cat:"Automation Core", type:"mc",
+   q:"According to the Test Automation Pyramid, which layer should have the MOST tests?",
+   options:["End-to-end UI tests","Unit tests","Manual exploratory tests","Performance tests"],
+   answer:1,
+   exp:"The pyramid favors many fast, cheap unit tests at the base, fewer integration/service tests in the middle, and few slow, brittle UI/E2E tests at the top."},
+
+  {lvl:"junior", track:"auto", cat:"Automation Core", type:"mc",
+   q:"Which test is the BEST candidate for automation?",
+   options:["A one-time visual design review","A stable, high-value regression test run on every build","A test whose requirements change daily","A usability study with real users"],
+   answer:1,
+   exp:"Automate stable, repetitive, frequently-run, high-ROI tests (regression, smoke). Volatile, exploratory, or subjective tests stay manual."},
+
+  {lvl:"junior", track:"auto", cat:"Automation Core", type:"tf",
+   q:"Test automation's main purpose is to completely replace manual testers.",
+   options:["True","False"],
+   answer:1,
+   exp:"Automation handles repetitive, deterministic checks fast and frees humans for exploratory, UX, and judgment-based testing. It augments testers, it doesn't replace them."},
+
+  {lvl:"junior", track:"auto", cat:"Automation Core", type:"mc",
+   q:"An 'ice-cream cone' anti-pattern in automation means:",
+   options:["Too many fast unit tests","An inverted pyramid: mostly slow, brittle UI/E2E tests and few unit tests","Perfectly balanced test layers","No tests at all"],
+   answer:1,
+   exp:"The inverted pyramid (ice-cream cone) over-relies on heavy UI tests — slow, flaky, expensive to maintain — and under-invests in unit/integration tests."},
+
+  {lvl:"junior", track:"auto", cat:"Automation Core", type:"mc",
+   q:"What makes a UI automated test 'flaky', and what's the best first fix?",
+   options:["Slow assertions; add more tests","Non-deterministic timing; replace hard sleeps with explicit/conditional waits","Too many comments; remove them","Wrong browser; only use one"],
+   answer:1,
+   exp:"Flakiness often comes from timing/async issues. Replacing fixed Thread.sleep with explicit waits (wait until element is clickable/visible) is the standard remedy."},
+
+  {lvl:"middle", track:"auto", cat:"Selenium / WebDriver", type:"mc",
+   q:"What is the key difference between an implicit wait and an explicit wait in Selenium?",
+   options:["They are identical","Implicit wait is a global polling timeout for element lookups; explicit wait waits for a specific condition on a specific element","Explicit wait is global; implicit is per-element","Only implicit waits work in headless mode"],
+   answer:1,
+   exp:"Implicit wait sets a default poll time for all findElement calls. Explicit wait (WebDriverWait + ExpectedConditions) waits for a specific condition. Mixing both is discouraged as it can cause unpredictable waits."},
+
+  {lvl:"middle", track:"auto", cat:"Selenium / WebDriver", type:"mc",
+   q:"Which locator strategy is generally the most robust and preferred when available?",
+   options:["Absolute XPath like /html/body/div[3]/div[2]/span","A stable id or a dedicated test attribute (e.g., data-testid)","Locating by visible text only","Index-based CSS like :nth-child(7)"],
+   answer:1,
+   exp:"A unique, stable id or purpose-built data-testid resists DOM changes. Absolute XPath and positional selectors are brittle and break with minor layout changes."},
+
+  {lvl:"senior", track:"auto", cat:"Selenium / WebDriver", type:"mc",
+   q:"What does StaleElementReferenceException indicate?",
+   options:["The element was never found","A previously located element is no longer attached to the DOM (page/DOM changed) and must be re-located","The browser crashed","The locator syntax is invalid"],
+   answer:1,
+   exp:"The element reference became stale because the DOM re-rendered. Re-find the element (or use a wait that returns a fresh reference) before interacting."},
+
+  {lvl:"middle", track:"auto", cat:"Selenium / WebDriver", type:"tf",
+   q:"Selenium WebDriver can directly test desktop applications and verify image pixels out of the box.",
+   options:["True","False"],
+   answer:1,
+   exp:"Selenium automates web browsers only. Desktop apps need tools like WinAppDriver/Appium; pixel/visual checks need visual-testing tools (Applitools, Percy)."},
+
+  {lvl:"middle", track:"auto", cat:"Selenium / WebDriver", type:"mc",
+   q:"To interact with a dynamically loaded button that appears after an AJAX call, the correct approach is:",
+   options:["Use Thread.sleep(10000) always","Use an explicit WebDriverWait for elementToBeClickable","Click immediately and catch the exception","Refresh the page in a loop"],
+   answer:1,
+   exp:"Explicit waits on a specific ExpectedCondition (e.g., elementToBeClickable) synchronize the test with the app's async state reliably and efficiently."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"The Page Object Model (POM) primarily improves automation by:",
+   options:["Making tests run faster on the GPU","Encapsulating page structure/locators in classes so tests are readable and maintenance is centralized","Removing the need for assertions","Eliminating the need for waits"],
+   answer:1,
+   exp:"POM separates page locators/actions from test logic. When the UI changes, you update one page class instead of many tests — reducing duplication and maintenance cost."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"In a data-driven framework, what is being externalized from the test logic?",
+   options:["The programming language","The test input data and expected results (e.g., CSV/Excel/JSON), so one script runs many data sets","The browser binary","The CI server"],
+   answer:1,
+   exp:"Data-driven testing separates test data from test code, letting the same logic execute across many input combinations — great for coverage with minimal code."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"In BDD (e.g., Cucumber/Gherkin), what does the Given/When/Then structure describe?",
+   options:["Given=action, When=result, Then=setup","Given=precondition/context, When=action/event, Then=expected outcome","All three mean the same","The order tests execute on the server"],
+   answer:1,
+   exp:"Gherkin scenarios read as Given (context) → When (action) → Then (expected result), creating living documentation shared by business and engineering."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"tf",
+   q:"Good automated tests should be independent and able to run in any order without relying on each other's state.",
+   options:["True","False"],
+   answer:0,
+   exp:"Test independence (no shared/order-dependent state) prevents cascading failures and enables parallel execution. Each test should set up and tear down its own data."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"A test asserts only that no exception was thrown but checks no values. The main problem is:",
+   options:["It's perfect","It's a weak/missing-assertion test that can pass while the behavior is wrong","It runs too slowly","It needs more comments"],
+   answer:1,
+   exp:"Without meaningful assertions, a test gives false confidence — it 'passes' as long as the code doesn't crash, even when outputs are incorrect."},
+
+  {lvl:"middle", track:"auto", cat:"API Automation", type:"mc",
+   q:"Why is API/service-layer automation often preferred over UI automation for business logic?",
+   options:["APIs look nicer","It's faster, more stable, and less brittle since it skips the volatile UI layer","UI tests can't use assertions","APIs never change"],
+   answer:1,
+   exp:"API tests run faster and are far more stable than UI tests because they avoid rendering, timing, and locator fragility — ideal for validating logic and data."},
+
+  {lvl:"senior", track:"auto", cat:"API Automation", type:"mc",
+   q:"In API test automation, 'schema validation' verifies that:",
+   options:["The server's CPU usage","The response structure, field names, and data types conform to the expected contract","The HTML renders correctly","The database is encrypted"],
+   answer:1,
+   exp:"Schema/contract validation (e.g., JSON Schema, OpenAPI) ensures responses keep the agreed structure and types, catching breaking API changes early."},
+
+  {lvl:"senior", track:"auto", cat:"API Automation", type:"mc",
+   q:"What is the purpose of a 'mock' or 'stub' server in API test automation?",
+   options:["To speed up the database","To simulate a dependency's responses so tests are deterministic and isolated from unstable external services","To replace the test framework","To encrypt traffic"],
+   answer:1,
+   exp:"Mock/stub servers (e.g., WireMock) return controlled responses, isolating the system under test from flaky third-party dependencies and enabling edge-case simulation."},
+
+  {lvl:"middle", track:"auto", cat:"API Automation", type:"tf",
+   q:"Tools like Newman (Postman CLI) or REST Assured let API tests run inside a CI pipeline without a browser.",
+   options:["True","False"],
+   answer:0,
+   exp:"Newman and REST Assured execute API tests headlessly via HTTP, making them ideal for fast, browserless validation inside CI/CD pipelines."},
+
+  {lvl:"senior", track:"auto", cat:"CI/CD & DevOps", type:"mc",
+   q:"What is the main benefit of integrating automated tests into a CI pipeline?",
+   options:["Tests only run once a year","Every commit/merge automatically triggers tests, giving fast feedback and catching regressions early","It removes the need for any tests","It deletes failing code automatically"],
+   answer:1,
+   exp:"CI runs the suite on each change, surfacing regressions within minutes so defects are caught before they spread — the core of 'fail fast'."},
+
+  {lvl:"senior", track:"auto", cat:"CI/CD & DevOps", type:"mc",
+   q:"Running tests in parallel across browsers/machines (e.g., Selenium Grid) primarily helps by:",
+   options:["Improving test assertions","Drastically reducing total execution time and enabling cross-browser coverage","Removing the need for waits","Encrypting the test data"],
+   answer:1,
+   exp:"Parallel execution distributes tests across nodes, cutting wall-clock time and allowing the same suite to verify multiple browser/OS combinations."},
+
+  {lvl:"senior", track:"auto", cat:"CI/CD & DevOps", type:"mc",
+   q:"A 'quality gate' in a CI/CD pipeline is best described as:",
+   options:["A login screen for the pipeline","A defined condition (e.g., all tests pass, coverage threshold met) that must be satisfied before the build can proceed/deploy","A manual signature on paper","The final UI screen of the app"],
+   answer:1,
+   exp:"Quality gates enforce criteria (passing tests, coverage, no critical vulnerabilities) automatically, blocking promotion of builds that don't meet the bar."},
+
+  {lvl:"senior", track:"auto", cat:"CI/CD & DevOps", type:"tf",
+   q:"A frequently failing or flaky test in CI should simply be ignored or auto-retried forever and left in the suite.",
+   options:["True","False"],
+   answer:1,
+   exp:"Chronically flaky tests erode trust in the pipeline ('green is meaningless'). They should be quarantined and fixed (or removed), not blindly retried forever."},
+
+  {lvl:"expert", cat:"Reviews & Static", type:"mc",
+   q:"Among static review types, which is the MOST formal, with defined roles (moderator, scribe), entry/exit criteria, and metrics?",
+   options:["Informal review","Walkthrough","Inspection","Pair coffee chat"],
+   answer:2,
+   exp:"An inspection is the most formal review: led by a trained moderator, with defined roles, checklists, entry/exit criteria, and logged metrics. Walkthroughs (author-led) and informal reviews are progressively less formal."},
+
+  {lvl:"expert", cat:"Risk", type:"mc",
+   q:"'The vendor delivering the payment SDK late' versus 'the checkout miscalculating tax' are examples of, respectively:",
+   options:["Two product risks","A project risk and a product risk","A product risk and a project risk","Two project risks"],
+   answer:1,
+   exp:"Project risks threaten the project's ability to deliver (schedules, resources, suppliers). Product (quality) risks are about the product failing in use (a tax miscalculation). Testers mainly mitigate product risks."},
+
+  {lvl:"expert", cat:"Coverage & Metrics", type:"mc",
+   q:"Defect leakage (escape rate) is best expressed as:",
+   options:["Defects found in testing ÷ test cases","Defects found in production ÷ total defects (production + pre-release)","Reopened defects ÷ closed defects","Test cases passed ÷ executed"],
+   answer:1,
+   exp:"Defect leakage = escaped (production) defects ÷ total defects found. It measures how many bugs slipped past testing — the inverse intuition of Defect Removal Efficiency."},
+
+  {lvl:"expert", cat:"Test Estimation", type:"mc",
+   q:"Using 3-point (PERT) estimation with Optimistic=4, Most likely=10, Pessimistic=28 (hours), the expected estimate is:",
+   options:["10 hours","12 hours","14 hours","20 hours"],
+   answer:1,
+   exp:"PERT expected = (O + 4M + P) ÷ 6 = (4 + 40 + 28) ÷ 6 = 72 ÷ 6 = 12 hours. The weighting toward 'most likely' tempers the pessimistic tail."},
+
+  {lvl:"expert", cat:"Advanced Design", type:"mc",
+   q:"Orthogonal Array Testing (OATS) is chosen over exhaustive testing primarily to:",
+   options:["Guarantee 100% combination coverage","Achieve uniform pairwise coverage of factor interactions with a mathematically minimal, balanced set of cases","Test only one factor at a time","Remove the need for test data"],
+   answer:1,
+   exp:"Orthogonal arrays give balanced, uniformly distributed coverage of all pairwise (sometimes higher-order) interactions in a minimal set — a structured form of pairwise testing rooted in design-of-experiments."},
+
+  {lvl:"expert", cat:"Non-Functional", type:"mc",
+   q:"A performance report shows average response time 200ms but p99 of 4s. The correct interpretation is:",
+   options:["Everything is fine; the average is low","1% of requests are very slow (4s) — averages hide tail latency, so SLOs should target percentiles like p95/p99","p99 is a measurement error","The server has 99 users"],
+   answer:1,
+   exp:"Averages mask outliers. p99=4s means 1% of users wait 4 seconds — often the most important customers. Performance SLOs are defined on percentiles, not means."},
+
+  {lvl:"expert", cat:"Security", type:"mc",
+   q:"What is the key difference between stored (persistent) and reflected XSS?",
+   options:["They are identical","Stored XSS is saved server-side and served to many users; reflected XSS is bounced back via a crafted request/link to a single victim","Reflected XSS is more permanent","Stored XSS only affects the attacker"],
+   answer:1,
+   exp:"Stored XSS persists in the app's storage (e.g., a comment) and hits every viewer. Reflected XSS is delivered through a malicious link/parameter echoed back immediately. Both stem from unescaped output."},
+
+  {lvl:"expert", cat:"Security", type:"mc",
+   q:"A user CAN log in but should NOT be able to view another user's invoice, yet they can. This is primarily a failure of:",
+   options:["Authentication","Authorization (access control)","Encryption","Load balancing"],
+   answer:1,
+   exp:"Authentication proves who you are; authorization controls what you may access. Seeing another user's data despite valid login is a broken-access-control / IDOR authorization flaw (OWASP Top 10)."},
+
+  {lvl:"expert", cat:"API & Data", type:"mc",
+   q:"In database testing, the ACID 'Isolation' property ensures that:",
+   options:["Transactions are encrypted","Concurrent transactions don't interfere, producing results as if executed sequentially","Data is backed up to another server","Each table is in a separate file"],
+   answer:1,
+   exp:"Isolation guarantees concurrent transactions don't see each other's uncommitted intermediate state. Testing isolation levels surfaces dirty reads, non-repeatable reads, and phantom rows."},
+
+  {lvl:"senior", cat:"Non-Functional", type:"mc",
+   q:"For accessibility testing, an image conveying information must have a text alternative. Which standard/attribute is central?",
+   options:["WCAG guidelines, via meaningful alt text / ARIA labels for assistive tech","Only CSS color rules","The HTML title tag of the page","Image file size limits"],
+   answer:0,
+   exp:"WCAG (e.g., 1.1.1 Non-text Content) requires text alternatives so screen readers can convey meaning. Decorative images use empty alt; informative ones need descriptive alt/ARIA."},
+
+  {lvl:"senior", cat:"Advanced Design", type:"mc",
+   q:"Which best describes effective NEGATIVE testing?",
+   options:["Testing only valid, expected inputs","Deliberately supplying invalid, unexpected, or malicious inputs to confirm the system fails gracefully and securely","Testing with the app turned off","Re-running positive tests twice"],
+   answer:1,
+   exp:"Negative testing probes how the system handles bad input and misuse (errors, exceptions, security) — verifying graceful, safe failure rather than crashes or data corruption."},
+
+  {lvl:"expert", cat:"Process & Strategy", type:"mc",
+   q:"In Session-Based Test Management (SBTM), a 'charter' is:",
+   options:["A signed legal contract","A concise mission statement defining the focus and scope of a timeboxed exploratory testing session","A list of all automated scripts","The release sign-off document"],
+   answer:1,
+   exp:"SBTM structures exploratory testing into timeboxed sessions guided by a charter (mission/scope), with debriefs and session reports — making exploratory work accountable and measurable."},
+
+  {lvl:"expert", track:"auto", cat:"Selenium / WebDriver", type:"mc",
+   q:"Selenium 4 introduced 'relative locators' (e.g., above, below, near). Their best use is:",
+   options:["Replacing all id-based locators","Finding an element by its visual position relative to a known anchor element when stable selectors are scarce","Speeding up the browser","Running tests without a driver"],
+   answer:1,
+   exp:"Relative locators (above/below/toLeftOf/near) locate elements by spatial relationship to a reference element — useful for layouts lacking stable attributes, though still less robust than a good test id."},
+
+  {lvl:"middle", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"To run UI tests in parallel safely, the WebDriver instance is commonly managed with:",
+   options:["A single static/global driver shared by all threads","A ThreadLocal<WebDriver> so each thread gets its own isolated driver instance","No driver at all","One driver reused sequentially only"],
+   answer:1,
+   exp:"A shared static driver causes race conditions across threads. ThreadLocal gives each test thread its own WebDriver, making parallel execution thread-safe."},
+
+  {lvl:"expert", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"What is the difference between a soft assertion and a hard assertion?",
+   options:["Soft asserts are slower","A hard assertion stops the test immediately on failure; a soft assertion collects failures and reports them all at the end","Soft asserts can't fail","They are the same"],
+   answer:1,
+   exp:"Hard assertions abort on first failure. Soft assertions (e.g., TestNG SoftAssert) record multiple failures and report them together at assertAll() — useful for verifying several fields in one run."},
+
+  {lvl:"expert", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"Using a Factory/Builder pattern for test data primarily helps by:",
+   options:["Making the UI prettier","Creating consistent, customizable test objects with sensible defaults, reducing duplicated setup and brittle fixtures","Removing the need for a database","Encrypting the test data"],
+   answer:1,
+   exp:"Object Mother / Builder / Factory patterns produce valid test entities with defaults you override only as needed — cutting setup duplication and making intent clear (e.g., aUser().withRole(ADMIN).build())."},
+
+  {lvl:"expert", track:"auto", cat:"API Automation", type:"mc",
+   q:"Consumer-driven contract testing (e.g., Pact) is designed to:",
+   options:["Load test the API","Verify that a provider's API still satisfies the expectations (contract) its consumers depend on, catching breaking changes without full E2E","Replace unit tests","Test only the UI"],
+   answer:1,
+   exp:"Contract testing captures each consumer's expectations as a contract the provider verifies in its pipeline — catching integration-breaking changes early, far cheaper and faster than end-to-end environments."},
+
+  {lvl:"expert", track:"auto", cat:"API Automation", type:"mc",
+   q:"When automating an API secured with OAuth2 bearer tokens, the robust approach is to:",
+   options:["Hard-code a token captured manually last week","Programmatically obtain/refresh a token at runtime and inject it in the Authorization header, handling expiry","Disable auth for tests","Share one token across all environments forever"],
+   answer:1,
+   exp:"Tokens expire. Automation should fetch a fresh token via the auth endpoint (or refresh flow) at runtime and add 'Authorization: Bearer <token>', rather than relying on stale, hard-coded credentials."},
+
+  {lvl:"expert", track:"auto", cat:"CI/CD & DevOps", type:"mc",
+   q:"A TestNG/JUnit 'retry analyzer' that re-runs failed tests is acceptable when:",
+   options:["Used to permanently mask genuinely flaky tests","Used sparingly to absorb rare infrastructure blips, while flakiness is tracked and root-caused — not as a substitute for fixing tests","Applied to every test to guarantee green","Never logged or reported"],
+   answer:1,
+   exp:"Limited retries can smooth over transient infra failures, but retries must be visible and flaky tests still investigated. Blanket retries that hide real defects make the suite untrustworthy."},
+
+  {lvl:"expert", track:"auto", cat:"CI/CD & DevOps", type:"mc",
+   q:"Running automated tests inside Docker containers in CI mainly provides:",
+   options:["Faster internet","Consistent, reproducible, isolated test environments ('works on my machine' eliminated) that spin up and tear down cleanly","Automatic test writing","Free cloud storage"],
+   answer:1,
+   exp:"Containers pin OS, browser, and dependency versions so tests run identically across developer machines and CI, and can be created/destroyed per run for clean isolation."},
+
+  {lvl:"expert", track:"auto", cat:"Frameworks & Patterns", type:"mc",
+   q:"A robust automation framework captures a screenshot (and page source/logs) specifically:",
+   options:["On every single step regardless of result","At the moment a test fails, to give actionable evidence for debugging","Only before the test starts","Never, to save disk space"],
+   answer:1,
+   exp:"Capturing a screenshot, DOM, and logs at the point of failure (e.g., via a listener/AfterMethod hook) provides the context needed to diagnose failures quickly, especially in headless CI runs."},
+
+  {lvl:"expert", track:"auto", cat:"Automation Core", type:"mc",
+   q:"Visual regression testing (e.g., Applitools, Percy) catches defects that functional assertions usually miss, such as:",
+   options:["A wrong API status code","Unintended layout shifts, overlapping/cut-off elements, font or color changes that don't break functionality","A null pointer exception","A slow database query"],
+   answer:1,
+   exp:"Functional checks verify behavior/values, not appearance. Visual testing compares rendered snapshots against a baseline to flag layout, styling, and rendering regressions a DOM assertion wouldn't catch."}
+];
+
+/* ================= GAME LOGIC ================= */
+const POINTS_BASE = 10;
+const $ = id => document.getElementById(id);
+let idx=0, score=0, streak=0, bestStreak=0, correctCount=0, answered=false;
+let selectedTrack="manual", DECK=[];
+let mode="practice";
+let qTimer=null, totalTimer=null, typeTimer=null, qLeft=0, qMax=0, elapsed=0;
+let timeouts=0, lookAways=0, soundOn=true, audioCtx=null;
+const TIER_TIME={junior:20, middle:25, senior:35, expert:45}; // seconds per tier
+const TIER_RANK={junior:0, middle:1, senior:2, expert:3};
+const results=[]; // {q, picked, correct, ok, lvl}
+
+const trackOf=q=>q.track||"manual";
+const deckFor=t=>t==="all"?QUESTIONS.slice():QUESTIONS.filter(q=>trackOf(q)===t);
+const trackTitle={manual:"Manual QA",auto:"Automation",all:"Full Spectrum"};
+
+const screens={start:$("screen-start"),quiz:$("screen-quiz"),result:$("screen-result")};
+function show(name){for(const k in screens)screens[k].classList.toggle("hide",k!==name);}
+
+/* ----- SCORE HISTORY (persisted in browser localStorage) ----- */
+const HIST_KEY="qa_quest_history_v1";
+let lastSavedId=null;
+function loadHistory(){
+  try{return JSON.parse(localStorage.getItem(HIST_KEY))||[];}catch(e){return[];}
+}
+function saveHistory(arr){
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}catch(e){}
+}
+function recordAttempt(entry){
+  const h=loadHistory();
+  h.push(entry);
+  saveHistory(h);
+}
+function clearHistory(){
+  saveHistory([]);lastSavedId=null;
+  renderHistory("hist-list","hist-best","start-history");
+  renderHistory("hist-list2","hist-best2");
+}
+function fmtDate(ts){
+  const d=new Date(ts);
+  return d.toLocaleDateString(undefined,{month:"short",day:"numeric"})+" · "+
+         d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+}
+function renderHistory(listId,bestId,wrapId){
+  const h=loadHistory();
+  const wrap=wrapId?$(wrapId):null;
+  if(wrap)wrap.classList.toggle("hide",h.length===0);
+  const list=$(listId);
+  if(!h.length){
+    if(list)list.innerHTML='<div class="hist-empty">No attempts yet — finish a quest to log your first score! 🚀</div>';
+    if(bestId)$(bestId).innerHTML="";
+    return;
+  }
+  // best stats
+  const bestPct=Math.max(...h.map(e=>e.pct));
+  const bestPts=Math.max(...h.map(e=>e.score));
+  if(bestId)$(bestId).innerHTML=`Attempts: <b>${h.length}</b> &nbsp;·&nbsp; Best: <b>${bestPct}%</b> &nbsp;·&nbsp; Top score: <b>${bestPts} pts</b>`;
+  // show most recent 8, newest first
+  const recent=h.slice(-8).reverse();
+  list.innerHTML=recent.map(e=>{
+    const isTop=e.pct===bestPct;
+    const isNew=e.id===lastSavedId;
+    const tname={manual:"🧪 Manual",auto:"🤖 Auto",all:"🌐 All"}[e.track||"manual"];
+    const lvmap={trainee:["TRAINEE","#9aa6d6"],junior:["JUNIOR","#3ff0a8"],middle:["MIDDLE","#46e6ff"],senior:["SENIOR","#9b6dff"],expert:["EXPERT","#ff6ad5"]};
+    const lc=lvmap[e.level||"middle"];
+    return `<div class="hist-row ${isTop?'top':''}">
+      <div class="rank">${isTop?'★':'•'}</div>
+      <div class="when">${fmtDate(e.ts)}<span class="tracktag">${tname}</span>${e.mode==="interview"?'<span class="tracktag">🎙️ IV</span>':''}<span class="histlv" style="color:${lc[1]}">${lc[0]}</span>${isNew?'<span class="newbadge">NEW</span>':''}</div>
+      <div class="det">${e.correct}/${e.total} · 🔥${e.bestStreak}</div>
+      <div class="pts">${e.score} pts</div>
+      <div class="pct grad-text">${e.pct}%</div>
+    </div>`;
+  }).join("");
+}
+
+// ---- track selector ----
+function refreshTrackUI(){
+  $("t-manual").textContent=deckFor("manual").length+" Qs";
+  $("t-auto").textContent=deckFor("auto").length+" Qs";
+  $("t-all").textContent=deckFor("all").length+" Qs";
+  $("s-count").textContent=deckFor(selectedTrack).length;
+}
+document.querySelectorAll("#tracks .track-btn").forEach(b=>{
+  b.onclick=()=>{
+    selectedTrack=b.dataset.track;
+    document.querySelectorAll("#tracks .track-btn").forEach(x=>x.classList.toggle("active",x===b));
+    refreshTrackUI();
+  };
+});
+refreshTrackUI();
+
+// ---- mode selector (Practice / Interview Pressure) ----
+document.querySelectorAll("#modes .track-btn").forEach(b=>{
+  b.onclick=()=>{
+    mode=b.dataset.mode;
+    document.querySelectorAll("#modes .track-btn").forEach(x=>x.classList.toggle("active",x===b));
+  };
+});
+$("btn-mute").onclick=()=>{soundOn=!soundOn;$("btn-mute").textContent=soundOn?"🔊":"🔇";};
+// look-away detection during an interview
+window.addEventListener("blur",()=>{
+  if(mode==="interview"&&!screens.quiz.classList.contains("hide")){lookAways++;ivSay(pick(IV.lookaway));}
+});
+
+$("btn-start").onclick=start;
+$("btn-retry").onclick=start;
+$("btn-next").onclick=nextQ;
+$("btn-review").onclick=()=>{$("review").classList.toggle("hide");
+  $("btn-review").textContent=$("review").classList.contains("hide")?"Review Answers":"Hide Review";};
+$("btn-clear-hist").onclick=clearHistory;
+$("btn-clear-hist2").onclick=clearHistory;
+
+// show history on the landing screen at load
+renderHistory("hist-list","hist-best","start-history");
+
+function start(){
+  clearTimers();
+  DECK=deckFor(selectedTrack);
+  idx=0;score=0;streak=0;bestStreak=0;correctCount=0;results.length=0;
+  timeouts=0;lookAways=0;
+  if(mode==="interview"){
+    DECK.sort((a,b)=>TIER_RANK[a.lvl]-TIER_RANK[b.lvl]);   // escalating difficulty
+    document.body.classList.add("interview");
+    elapsed=0;updateClock();
+    totalTimer=setInterval(()=>{elapsed++;updateClock();},1000);
+    $("btn-mute").textContent=soundOn?"🔊":"🔇";
+  }else{
+    document.body.classList.remove("interview");
+  }
+  $("review").classList.add("hide");$("btn-review").textContent="Review Answers";
+  show("quiz");render();
+  if(mode==="interview")setTimeout(()=>ivSay(pick(IV.open)),300);
+}
+
+function render(){
+  answered=false;
+  const item=DECK[idx];
+  $("hud-cat").textContent=item.cat;
+  const lv=item.lvl||"middle";
+  const lp=$("hud-lvl");lp.textContent=lv.toUpperCase();lp.className="pill lvl lvl-"+lv;
+  $("hud-score").textContent=score;
+  $("qnum").textContent=`Question ${idx+1} of ${DECK.length}`;
+  $("qtext").textContent=item.q;
+  $("bar").style.width=`${(idx/DECK.length)*100}%`;
+  updateStreakUI();
+
+  const wrap=$("opts");wrap.innerHTML="";
+  const keys=["A","B","C","D"];
+  item.options.forEach((opt,i)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML=`<span class="key">${keys[i]}</span><span class="txt">${opt}</span><span class="mark"></span>`;
+    b.onclick=()=>choose(i,b);
+    wrap.appendChild(b);
+  });
+
+  const ex=$("explain");ex.className="explain";ex.innerHTML="";
+  const nx=$("btn-next");nx.classList.remove("show");
+  nx.textContent=idx===DECK.length-1?"See Results 🏁":"Next →";
+
+  if(mode==="interview")startQTimer(lv);
+}
+
+function choose(i,btn){
+  if(answered)return;
+  answered=true;
+  if(qTimer){clearInterval(qTimer);qTimer=null;}
+  $("vignette").classList.remove("on");
+  const item=DECK[idx];
+  const ok=i===item.answer;
+  const allBtns=[...$("opts").children];
+
+  if(ok){
+    correctCount++;
+    streak++;bestStreak=Math.max(bestStreak,streak);
+    const bonus=Math.min(streak-1,5)*2; // streak bonus up to +10
+    score+=POINTS_BASE+bonus;
+  }else{
+    streak=0;
+  }
+  results.push({q:item.q,picked:item.options[i],correct:item.options[item.answer],ok,lvl:item.lvl||"middle"});
+
+  // ---- INTERVIEW MODE: lock choice, NO reveal, interviewer reacts, auto-advance ----
+  if(mode==="interview"){
+    allBtns.forEach((b,bi)=>{b.classList.add("locked");if(bi===i)b.classList.add("picked");else b.classList.add("dim");});
+    const spent=qMax-qLeft;
+    ivSay(spent<qMax*0.34?pick(IV.fast):spent>qMax*0.66?pick(IV.slow):pick(IV.picked));
+    advanceSoon();
+    return;
+  }
+
+  // ---- PRACTICE MODE: reveal correct/incorrect + explanation ----
+  allBtns.forEach((b,bi)=>{
+    b.classList.add("locked");
+    if(bi===item.answer){b.classList.add("correct");b.querySelector(".mark").textContent="✓";}
+    else if(bi===i){b.classList.add("wrong");b.querySelector(".mark").textContent="✗";}
+    else b.classList.add("dim");
+  });
+  if(ok)pop($("hud-score"));
+  $("hud-score").textContent=score;
+  updateStreakUI();
+  const ex=$("explain");
+  ex.classList.add("show",ok?"good":"bad");
+  ex.innerHTML=`<span class="tag">${ok?"✓ Correct!":"✗ Not quite"}</span>${item.exp}`;
+  $("btn-next").classList.add("show");
+}
+
+function nextQ(){
+  if(idx<DECK.length-1){idx++;render();}
+  else finish();
+}
+
+function updateStreakUI(){
+  const s=$("hud-streak");$("streak-n").textContent=streak;
+  s.classList.toggle("on",streak>=2);
+}
+
+function pop(el){el.animate([{transform:"scale(1)"},{transform:"scale(1.35)"},{transform:"scale(1)"}],{duration:300});}
+
+function finish(){
+  clearTimers();
+  activeThresh=mode==="interview"?0.7:0.6;   // stricter bar under interview pressure
+  $("bar").style.width="100%";
+  show("result");
+  $("res-h1").innerHTML=mode==="interview"?'Interview <span class="grad-text">Debrief</span>':'Mission <span class="grad-text">Complete</span>';
+  const total=DECK.length;
+  const pct=Math.round(correctCount/total*100);
+  $("res-correct").textContent=correctCount;
+  $("res-total").textContent=total;
+  $("res-best").textContent=bestStreak;
+  $("res-pct").textContent=pct+"%";
+
+  // expertise estimation from per-tier accuracy
+  const est=estimateExpertise();
+  // save this attempt to persistent history
+  lastSavedId=Date.now()+"-"+Math.random().toString(36).slice(2,7);
+  recordAttempt({id:lastSavedId,ts:Date.now(),score,correct:correctCount,total,pct,bestStreak,track:selectedTrack,level:est.reached,mode});
+  renderHistory("hist-list2","hist-best2");          // results screen
+  renderHistory("hist-list","hist-best","start-history"); // keep landing in sync
+
+  // ring
+  const r=78,circ=2*Math.PI*r;
+  const fg=$("ring-fg");fg.style.strokeDasharray=circ;
+  setTimeout(()=>{fg.style.transition="stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)";
+    fg.style.strokeDashoffset=circ*(1-pct/100);},120);
+
+  const trackWord=selectedTrack==="auto"?"Automation":selectedTrack==="manual"?"Manual QA":"QA";
+  const titles={
+    trainee:"Aspiring "+trackWord+" Tester",
+    junior:"Junior "+trackWord+" Engineer",
+    middle:"Mid-Level "+trackWord+" Engineer",
+    senior:"Senior "+trackWord+" Engineer",
+    expert:"Expert / Lead "+trackWord+" Engineer"
+  };
+  const verdicts={
+    trainee:"Fundamentals need shoring up first — the estimate is fundamentals-first, so nail the junior tier before climbing. Read the explanations and replay.",
+    junior:"Solid grasp of the fundamentals. To reach mid-level, sharpen your test-design techniques and process knowledge.",
+    middle:"Strong, well-rounded knowledge. Deepen metrics, non-functional and advanced design to push toward senior.",
+    senior:"Impressive depth across advanced topics — you reason like a senior who can own quality strategy. Expert tier is within reach.",
+    expert:"Outstanding — you handled expert-level material with command. This is lead / architect territory. 🛸"
+  };
+  if(mode==="interview"){
+    const decisions={trainee:"❌ No Hire",junior:"✅ Hire · Junior",middle:"✅ Hire · Mid-Level",senior:"🌟 Strong Hire · Senior",expert:"🏆 Strong Hire · Lead"};
+    const closePool=est.reached==="trainee"?IV.close_bad:(est.reached==="senior"||est.reached==="expert")?IV.close_good:IV.close_mid;
+    $("res-grade").textContent=decisions[est.reached];
+    $("res-grade").className="grade level-"+est.reached;
+    $("res-verdict").textContent=`Estimated level: ${titles[est.reached]}. "${pick(closePool)}" — Composure: ${timeouts} timeout${timeouts===1?"":"s"}, ${lookAways} look-away${lookAways===1?"":"s"}, ${fmtMMSS(elapsed)} total.`+(est.note?" "+est.note:"");
+  }else{
+    $("res-grade").textContent=titles[est.reached];
+    $("res-grade").className="grade level-"+est.reached;
+    $("res-verdict").textContent=verdicts[est.reached]+(est.note?" "+est.note:"");
+  }
+  renderTiers(est);
+  if(est.reached==="senior"||est.reached==="expert")celebrate();
+
+  // review
+  const list=$("review-list");list.innerHTML="";
+  results.forEach((r,i)=>{
+    const d=document.createElement("div");
+    d.className="rev-item "+(r.ok?"ok":"no");
+    d.innerHTML=`<div class="ic">${r.ok?"✓":"✗"}</div>
+      <div class="q"><b>Q${i+1}. ${r.q}</b>
+      <div class="a">${r.ok?"You answered correctly":`Your answer: ${r.picked} · <span class="corr">Correct: ${r.correct}</span>`}</div></div>`;
+    list.appendChild(d);
+  });
+}
+
+/* ================= INTERVIEW PRESSURE ENGINE ================= */
+const IV={
+  open:["Thanks for coming in. Let's get started — first question.","I've got your CV here. Let's see what you actually know.","We have a lot to cover, so let's keep a brisk pace.","Relax… or don't. The clock runs either way.","Camera's on, I'm recording. Whenever you're ready."],
+  fast:["Quick. I like decisiveness.","Confident. Noted.","Mm-hm. Next.","No hesitation — interesting.","You've clearly seen this before."],
+  slow:["Take your time… but not too much.","Still thinking? Clock's ticking.","We're watching the time here.","I'll need an answer shortly.","Hmm. Cutting it close."],
+  picked:["Noted.","Okay.","I've written that down.","Interesting choice.","We'll come back to that. Maybe.","Mm-hm.","Right.","Let's keep moving."],
+  timeout:["Time. We move on.","No answer — I'm marking that.","The clock beat you. Next.","Let's not dwell. Onward.","Silence noted."],
+  lookaway:["I saw that. Eyes here, please.","No Googling in here.","Stay with me — focus.","I noticed you glanced away.","Something more interesting than me?"],
+  close_good:["Strong interview. You'll hear from us — good news.","Impressive. You held up under pressure.","I've seen a lot of candidates. You're near the top.","That's a hire. Welcome aboard, pending paperwork."],
+  close_mid:["Solid, but not the ceiling. A few gaps to close.","Decent. We'll discuss internally.","You held up okay. We'll be in touch.","Promising. Tighten the weak spots."],
+  close_bad:["We'll let you know. The fundamentals need work.","Not quite there yet — come back stronger.","The basics tripped you up. Keep studying.","I'd revisit the core concepts before the next round."]
+};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+function ivSay(text){
+  const el=$("iv-text");
+  if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+  const av=$("iv-avatar");av.classList.add("react");setTimeout(()=>av.classList.remove("react"),260);
+  let i=0;el.textContent="";
+  typeTimer=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(typeTimer);typeTimer=null;}},18);
+}
+
+function beep(freq,dur,type,vol){
+  if(!soundOn)return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type=type||"sine";o.frequency.value=freq;o.connect(g);g.connect(audioCtx.destination);
+    g.gain.setValueAtTime(vol||0.05,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+(dur||0.08));
+    o.start();o.stop(audioCtx.currentTime+(dur||0.08));
+  }catch(e){}
+}
+const tick=()=>beep(880,0.04,"square",0.04);
+const buzzer=()=>beep(150,0.5,"sawtooth",0.09);
+
+function clearTimers(){
+  if(qTimer){clearInterval(qTimer);qTimer=null;}
+  if(totalTimer){clearInterval(totalTimer);totalTimer=null;}
+  $("vignette").classList.remove("on");
+}
+const fmtMMSS=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+function updateClock(){ $("iv-clock").textContent=fmtMMSS(elapsed); }
+function startQTimer(lvl){
+  if(qTimer){clearInterval(qTimer);qTimer=null;}
+  qMax=TIER_TIME[lvl]||25;qLeft=qMax;
+  const bar=$("qtimer"),fill=$("qtimer-fill"),num=$("qtimer-num");
+  bar.classList.remove("warn","danger");fill.style.width="100%";num.textContent=qLeft;
+  $("vignette").classList.remove("on");
+  qTimer=setInterval(()=>{
+    qLeft--;num.textContent=Math.max(qLeft,0);fill.style.width=Math.max(qLeft/qMax*100,0)+"%";
+    if(qLeft<=10&&qLeft>5)bar.classList.add("warn");
+    if(qLeft<=5&&qLeft>0){bar.classList.remove("warn");bar.classList.add("danger");$("vignette").classList.add("on");tick();}
+    if(qLeft<=0){clearInterval(qTimer);qTimer=null;$("vignette").classList.remove("on");buzzer();onTimeout();}
+  },1000);
+}
+function onTimeout(){
+  if(answered)return;answered=true;
+  const item=DECK[idx];
+  [...$("opts").children].forEach(b=>{b.classList.add("locked","dim");});
+  results.push({q:item.q,picked:"(no answer — timed out)",correct:item.options[item.answer],ok:false,lvl:item.lvl||"middle"});
+  streak=0;timeouts++;
+  ivSay(pick(IV.timeout));
+  advanceSoon();
+}
+function advanceSoon(){
+  setTimeout(()=>{ if(idx<DECK.length-1){idx++;render();} else finish(); },1100);
+}
+
+/* ---- REAL expertise estimation: competency-ceiling model ----
+   Your level = the highest tier where accuracy >= activeThresh, AND every easier
+   tier was also passed (fundamentals-first, like a real interview). A tier
+   needs >= MINQ answered questions to be assessed. */
+const TIER_ORDER=["junior","middle","senior","expert"];
+let activeThresh=0.6; const MINQ=2;
+function estimateExpertise(){
+  const per={};TIER_ORDER.forEach(l=>per[l]={c:0,t:0});
+  results.forEach(r=>{const l=per[r.lvl]?r.lvl:"middle";per[l].t++;if(r.ok)per[l].c++;});
+  let reached="trainee", note="";
+  for(const tier of TIER_ORDER){
+    const d=per[tier];
+    if(d.t<MINQ){note="(Not enough "+tier+"-tier questions in this set to assess further.)";break;}
+    if(d.c/d.t>=activeThresh){reached=tier;} else {break;}
+  }
+  return {per,order:TIER_ORDER,reached,note};
+}
+function renderTiers(est){
+  const names={junior:"Junior",middle:"Middle",senior:"Senior",expert:"Expert"};
+  $("tiers").innerHTML=
+    '<div class="tiers-cap">Per-tier accuracy — your level is the highest tier passed at ≥'+Math.round(activeThresh*100)+'%, after clearing every easier tier.</div>'+
+    est.order.map(l=>{
+      const d=est.per[l];
+      const pct=d.t?Math.round(d.c/d.t*100):0;
+      const assessed=d.t>=MINQ;
+      const passed=assessed&&d.c/d.t>=activeThresh;
+      const mark=!assessed?"—":(passed?"✓":"✗");
+      return `<div class="tier-row${d.t===0?' dim':''}">
+        <div class="tier-name lvldot-${l}">${names[l]}</div>
+        <div class="tier-bar"><i class="lvlfill-${l}" style="width:${pct}%"></i></div>
+        <div class="tier-val">${d.c}/${d.t} · ${pct}% ${mark}</div>
+      </div>`;
+    }).join("");
+}
+
+function celebrate(){
+  const c=$("confetti");c.innerHTML="";
+  const colors=["#46e6ff","#9b6dff","#ff6ad5","#3ff0a8","#ffcf5c"];
+  for(let i=0;i<90;i++){
+    const p=document.createElement("i");
+    p.style.left=Math.random()*100+"vw";
+    p.style.background=colors[i%colors.length];
+    p.style.animationDuration=(2.5+Math.random()*2)+"s";
+    p.style.animationDelay=(Math.random()*0.6)+"s";
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    c.appendChild(p);
+  }
+  setTimeout(()=>c.innerHTML="",5200);
+}
+</script>
+</body>
+</html>
