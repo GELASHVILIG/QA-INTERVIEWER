@@ -202,6 +202,10 @@
   .link-btn{background:none;border:none;color:var(--txt-dim);font:inherit;font-size:12px;cursor:pointer;
     text-decoration:underline;text-underline-offset:3px;transition:color .15s}
   .link-btn:hover{color:var(--red)}
+  .topbar{display:flex;margin-bottom:12px}
+  .link-btn.back{text-decoration:none;font-weight:600;font-size:13px;padding:6px 12px;border-radius:10px;
+    border:1px solid var(--stroke);color:var(--txt-dim)}
+  .link-btn.back:hover{color:var(--txt);border-color:var(--stroke-bright);background:rgba(120,150,255,.08)}
   .hist-best{font-size:13px;color:var(--txt-dim);margin-bottom:14px}
   .hist-best b{color:var(--amber);font-size:15px}
   .hist-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;
@@ -343,6 +347,7 @@
 
   <!-- ===== QUIZ ===== -->
   <div class="card hide" id="screen-quiz">
+    <div class="topbar"><button class="link-btn back" id="btn-menu">← Main Menu</button></div>
     <div class="hud">
       <div class="meta">
         <span class="pill cat" id="hud-cat">Fundamentals</span>
@@ -400,6 +405,7 @@
     <div class="result-actions">
       <button class="btn" id="btn-retry">Play Again ↻</button>
       <button class="btn ghost" id="btn-review">Review Answers</button>
+      <button class="btn ghost" id="btn-menu2">Main Menu</button>
     </div>
     <div class="history" id="result-history">
       <div class="history-head">
@@ -1152,6 +1158,18 @@ $("btn-review").onclick=()=>{$("review").classList.toggle("hide");
   $("btn-review").textContent=$("review").classList.contains("hide")?"Review Answers":"Hide Review";};
 $("btn-clear-hist").onclick=clearHistory;
 $("btn-clear-hist2").onclick=clearHistory;
+$("btn-menu").onclick=goMenu;
+$("btn-menu2").onclick=goMenu;
+
+function goMenu(){
+  clearTimers();
+  if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+  answered=true;                       // ignore any in-flight answer
+  document.body.classList.remove("interview");
+  show("start");
+  refreshTrackUI();
+  renderHistory("hist-list","hist-best","start-history");
+}
 
 // show history on the landing screen at load
 renderHistory("hist-list","hist-best","start-history");
@@ -1395,7 +1413,10 @@ function onTimeout(){
   advanceSoon();
 }
 function advanceSoon(){
-  setTimeout(()=>{ if(idx<DECK.length-1){idx++;render();} else finish(); },1100);
+  setTimeout(()=>{
+    if(screens.quiz.classList.contains("hide"))return;   // user left to menu — abort
+    if(idx<DECK.length-1){idx++;render();} else finish();
+  },1100);
 }
 
 /* ---- REAL expertise estimation: competency-ceiling model ----
