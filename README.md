@@ -2,7 +2,9 @@
 
 A single-file, offline web app that drills you for **Manual QA** and **QA Automation** interviews. Friendly, futuristic UI with a built-in mini-game feel, instant explanations, a real expertise estimate, persistent score history, and a high-pressure **Interview mode**.
 
-No build step, no dependencies, no server — just open `qa-interview-quiz.html` in any modern browser.
+No build step, no dependencies, no server — just open `index.html` in any modern browser.
+
+**▶️ Live demo:** https://YOUR-USERNAME.github.io/QA-INTERVIEWER/ *(replace `YOUR-USERNAME` once GitHub Pages is enabled).*
 
 ## Features
 
@@ -24,7 +26,7 @@ No build step, no dependencies, no server — just open `qa-interview-quiz.html`
 ## Usage
 
 1. Download or clone the repo.
-2. Open `qa-interview-quiz.html` in your browser (double-click, or drag it into a browser window).
+2. Open `index.html` in your browser (double-click, or drag it into a browser window) — or visit the live GitHub Pages link above.
 3. Pick a mode and track, then start.
 
 > Interview mode uses the browser's Web Audio for ticking/buzzer cues. Audio starts after your first click (browser autoplay policy) — use the 🔊 button in the HUD to mute.
