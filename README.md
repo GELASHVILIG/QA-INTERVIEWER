@@ -4,7 +4,7 @@ A single-file, offline web app that drills you for **Manual QA** and **QA Automa
 
 No build step, no dependencies, no server — just open `index.html` in any modern browser.
 
-**▶️ Live demo:** https://YOUR-USERNAME.github.io/QA-INTERVIEWER/ *(replace `YOUR-USERNAME` once GitHub Pages is enabled).*
+**▶️ Live demo:** https://gelashvilig.github.io/QA-INTERVIEWER/ *(live once GitHub Pages is enabled).*
 
 ## Features
 
