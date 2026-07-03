@@ -13,3 +13,6 @@ desktop.ini
 *.log
 tmp/
 _*.cjs
+
+# Backend data (user accounts & results)
+data.json

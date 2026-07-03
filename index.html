@@ -88,6 +88,8 @@
     box-shadow:0 10px 26px rgba(120,90,255,.3);
   }
   .track-btn.active small{color:var(--cyan)}
+  #levels .track-btn{min-width:104px;padding:12px 14px}
+  #levels .track-btn .ico{font-size:20px}
   .stats-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
   .chip{
     background:var(--panel-2);border:1px solid var(--stroke);
@@ -230,6 +232,7 @@
   .grade.level-middle{color:var(--cyan)}
   .grade.level-senior{color:var(--violet)}
   .grade.level-expert{color:var(--pink)}
+  .grade.level-fail{color:var(--red)}
   .tiers{max-width:500px;margin:4px auto 26px;text-align:left}
   .tiers-cap{font-size:12px;color:var(--txt-dim);line-height:1.5;margin-bottom:16px;text-align:center}
   .tier-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
@@ -298,6 +301,28 @@
   .opt.picked{border-color:var(--cyan);background:rgba(70,230,255,.14)}
   .opt.picked .key{background:var(--cyan);color:#04221a;border-color:var(--cyan)}
 
+  /* ---- auth & account ---- */
+  #auth-form{max-width:360px;margin:0 auto}
+  #auth-form .field{margin-bottom:12px}
+  #auth-form input{
+    width:100%;font:inherit;color:var(--txt);
+    background:var(--panel-2);border:1.5px solid var(--stroke);border-radius:14px;
+    padding:14px 16px;outline:none;transition:border-color .15s;
+  }
+  #auth-form input:focus{border-color:var(--stroke-bright)}
+  #auth-form input::placeholder{color:var(--txt-dim)}
+  #auth-form .btn{width:100%}
+  .auth-err{color:var(--red);font-size:13px;font-weight:600;min-height:18px;margin-bottom:10px}
+  .userbar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    margin-bottom:20px;padding:10px 14px;font-size:13px;
+    border:1px solid var(--stroke);border-radius:14px;background:var(--panel-2);
+  }
+  .userbar .who{display:flex;align-items:center;gap:8px;font-weight:700}
+  .userbar .role{font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 8px;border-radius:999px;
+    border:1px solid rgba(255,207,92,.5);color:var(--amber)}
+  .userbar .acts{display:flex;gap:14px}
+
   @media (max-width:560px){
     .card{padding:24px}
     .question{font-size:18px}
@@ -309,8 +334,31 @@
 <div class="backdrop"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
 
 <div class="stage">
+  <!-- ===== AUTH ===== -->
+  <div class="card hide" id="screen-auth">
+    <div class="hero">
+      <div class="brand">
+        <div class="logo">🛰️</div>
+        <h1>QA <span class="grad-text">Quest</span></h1>
+      </div>
+      <p class="sub">Sign in to sync your score history across devices, climb the global leaderboard, and have your hiring verdicts saved to your applicant profile.</p>
+      <div class="tracks" id="auth-tabs">
+        <button class="track-btn active" data-auth="login" type="button"><span class="ico">🔑</span>Sign In<small>Existing account</small></button>
+        <button class="track-btn" data-auth="register" type="button"><span class="ico">✨</span>Register<small>New applicant</small></button>
+      </div>
+      <form id="auth-form" autocomplete="on">
+        <div class="field"><input id="auth-user" type="text" placeholder="Username" autocomplete="username" maxlength="20" required/></div>
+        <div class="field"><input id="auth-pass" type="password" placeholder="Password" autocomplete="current-password" required/></div>
+        <div class="auth-err" id="auth-err"></div>
+        <button class="btn" type="submit" id="btn-auth">Sign In →</button>
+      </form>
+      <button class="btn ghost" id="btn-guest" style="margin-top:12px" type="button">Play as Guest</button>
+    </div>
+  </div>
+
   <!-- ===== START ===== -->
-  <div class="card" id="screen-start">
+  <div class="card hide" id="screen-start">
+    <div class="userbar" id="userbar"></div>
     <div class="hero">
       <div class="brand">
         <div class="logo">🛰️</div>
@@ -328,6 +376,14 @@
         <button class="track-btn" data-track="auto"><span class="ico">🤖</span>Automation<small id="t-auto">0 Qs</small></button>
         <button class="track-btn" data-track="all"><span class="ico">🌐</span>All<small id="t-all">0 Qs</small></button>
       </div>
+      <div class="track-label">Interview level — the position you're applying for</div>
+      <div class="tracks" id="levels">
+        <button class="track-btn active" data-level="any"><span class="ico">🎯</span>Full Scan<small id="l-any">All tiers</small></button>
+        <button class="track-btn" data-level="junior"><span class="ico">🌱</span>Junior<small id="l-junior">0 Qs</small></button>
+        <button class="track-btn" data-level="middle"><span class="ico">⚙️</span>Middle<small id="l-middle">0 Qs</small></button>
+        <button class="track-btn" data-level="senior"><span class="ico">🚀</span>Senior<small id="l-senior">0 Qs</small></button>
+        <button class="track-btn" data-level="expert"><span class="ico">🏆</span>Expert<small id="l-expert">0 Qs</small></button>
+      </div>
       <div class="stats-row">
         <div class="chip"><div class="n" id="s-count">40</div><div class="l">Questions</div></div>
         <div class="chip"><div class="n">Mixed</div><div class="l">MC + True/False</div></div>
@@ -341,6 +397,12 @@
         </div>
         <div class="hist-best" id="hist-best"></div>
         <div id="hist-list"></div>
+      </div>
+      <div class="history hide" id="lb-wrap">
+        <div class="history-head">
+          <h3>🏆 Global Leaderboard</h3>
+        </div>
+        <div id="lb-list"></div>
       </div>
     </div>
   </div>
@@ -418,6 +480,16 @@
     <div class="review hide" id="review">
       <h3>Answer Review</h3>
       <div id="review-list"></div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN ===== -->
+  <div class="card hide" id="screen-admin">
+    <div class="topbar"><button class="link-btn back" id="btn-admin-back">← Main Menu</button></div>
+    <div class="brand"><div class="logo">🗂️</div><h1>Applicant <span class="grad-text">Results</span></h1></div>
+    <div class="hist-best" id="admin-stats" style="text-align:center;margin-top:10px"></div>
+    <div class="history" id="admin-wrap" style="margin-top:16px">
+      <div id="admin-list"></div>
     </div>
   </div>
 </div>
@@ -1051,39 +1123,179 @@ const QUESTIONS = [
 const POINTS_BASE = 10;
 const $ = id => document.getElementById(id);
 let idx=0, score=0, streak=0, bestStreak=0, correctCount=0, answered=false;
-let selectedTrack="manual", DECK=[];
+let selectedTrack="manual", targetLevel="any", DECK=[];
 let mode="practice";
 let qTimer=null, totalTimer=null, typeTimer=null, qLeft=0, qMax=0, elapsed=0;
 let timeouts=0, lookAways=0, soundOn=true, audioCtx=null;
 const TIER_TIME={junior:50, middle:60, senior:70, expert:80}; // seconds per tier (~1 min, scales with difficulty)
 const TIER_RANK={junior:0, middle:1, senior:2, expert:3};
+const LVL_RANK={trainee:-1, junior:0, middle:1, senior:2, expert:3};
+const LVL_NAME={junior:"Junior", middle:"Middle", senior:"Senior", expert:"Expert"};
+const LEVELS=["junior","middle","senior","expert"];
 const results=[]; // {q, picked, correct, ok, lvl}
 
 const trackOf=q=>q.track||"manual";
 const deckFor=t=>t==="all"?QUESTIONS.slice():QUESTIONS.filter(q=>trackOf(q)===t);
+// A level-L interview covers every tier up to and including L (fundamentals first, like a real interview)
+const levelDeckFor=(t,lvl)=>deckFor(t).filter(q=>TIER_RANK[q.lvl||"middle"]<=TIER_RANK[lvl]);
+const activeDeck=()=>targetLevel==="any"?deckFor(selectedTrack):levelDeckFor(selectedTrack,targetLevel);
 const trackTitle={manual:"Manual QA",auto:"Automation",all:"Full Spectrum"};
 
-const screens={start:$("screen-start"),quiz:$("screen-quiz"),result:$("screen-result")};
+const screens={auth:$("screen-auth"),start:$("screen-start"),quiz:$("screen-quiz"),result:$("screen-result"),admin:$("screen-admin")};
 function show(name){for(const k in screens)screens[k].classList.toggle("hide",k!==name);}
 
-/* ----- SCORE HISTORY (persisted in browser localStorage) ----- */
+/* ================= AUTH + BACKEND API =================
+   Talks to server.js (node server.js → http://localhost:3000).
+   If no server is reachable (e.g. opened as a file), the app
+   falls back to guest/local mode with localStorage history.  */
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let AUTH={token:localStorage.getItem("qa_token")||null,user:null};
+let serverOK=false, authMode="login";
+
+async function api(path,opts={}){
+  const res=await fetch(path,{...opts,headers:{
+    "Content-Type":"application/json",
+    ...(AUTH.token?{Authorization:"Bearer "+AUTH.token}:{}),
+    ...(opts.headers||{})
+  }});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok)throw new Error(data.error||("Request failed ("+res.status+")"));
+  return data;
+}
+
+async function initAuth(){
+  try{serverOK=(await fetch("/api/ping",{cache:"no-store"})).ok;}catch(e){serverOK=false;}
+  if(serverOK&&AUTH.token){
+    try{AUTH.user=(await api("/api/me")).user;}
+    catch(e){AUTH.token=null;localStorage.removeItem("qa_token");}
+  }
+  if(serverOK&&!AUTH.user&&!localStorage.getItem("qa_guest")){show("auth");}
+  else enterApp();
+}
+
+function enterApp(){
+  updateUserbar();
+  show("start");
+  refreshTrackUI();
+  refreshHistoryData();
+}
+
+async function submitAuth(){
+  const u=$("auth-user").value.trim(),p=$("auth-pass").value;
+  $("auth-err").textContent="";
+  try{
+    const d=await api(authMode==="login"?"/api/login":"/api/register",
+      {method:"POST",body:JSON.stringify({username:u,password:p})});
+    AUTH.token=d.token;AUTH.user=d.user;
+    localStorage.setItem("qa_token",d.token);localStorage.removeItem("qa_guest");
+    $("auth-pass").value="";
+    enterApp();
+  }catch(e){$("auth-err").textContent=e.message;}
+}
+
+async function logout(){
+  try{await api("/api/logout",{method:"POST"});}catch(e){}
+  AUTH.token=null;AUTH.user=null;
+  localStorage.removeItem("qa_token");localStorage.removeItem("qa_guest");
+  show("auth");
+}
+
+function updateUserbar(){
+  const ub=$("userbar");
+  if(AUTH.user){
+    ub.innerHTML=`<div class="who">👤 ${esc(AUTH.user.username)}${AUTH.user.role==="admin"?' <span class="role">ADMIN</span>':''}</div>
+      <div class="acts">${AUTH.user.role==="admin"?'<button class="link-btn" id="btn-admin">🗂️ Applicants</button>':''}
+      <button class="link-btn" id="btn-logout">Log out</button></div>`;
+    if(AUTH.user.role==="admin")$("btn-admin").onclick=openAdmin;
+    $("btn-logout").onclick=logout;
+  }else if(serverOK){
+    ub.innerHTML=`<div class="who">👤 Guest <span style="color:var(--txt-dim);font-weight:400">· scores stay in this browser</span></div>
+      <div class="acts"><button class="link-btn" id="btn-signin">Sign in / Register</button></div>`;
+    $("btn-signin").onclick=()=>{localStorage.removeItem("qa_guest");show("auth");};
+  }else{
+    ub.innerHTML=`<div class="who">💾 Local mode <span style="color:var(--txt-dim);font-weight:400">· run <b>node server.js</b> for accounts, leaderboard & admin</span></div>`;
+  }
+}
+
+/* ----- SCORE HISTORY (server when signed in, localStorage otherwise) ----- */
 const HIST_KEY="qa_quest_history_v1";
-let lastSavedId=null;
-function loadHistory(){
+let HISTORY=[], lastSavedId=null;
+function loadLocal(){
   try{return JSON.parse(localStorage.getItem(HIST_KEY))||[];}catch(e){return[];}
 }
-function saveHistory(arr){
+function saveLocal(arr){
   try{localStorage.setItem(HIST_KEY,JSON.stringify(arr));}catch(e){}
 }
-function recordAttempt(entry){
-  const h=loadHistory();
-  h.push(entry);
-  saveHistory(h);
-}
-function clearHistory(){
-  saveHistory([]);lastSavedId=null;
+async function refreshHistoryData(){
+  if(AUTH.user){
+    try{HISTORY=(await api("/api/history")).attempts||[];}catch(e){HISTORY=[];}
+  }else{
+    HISTORY=loadLocal();
+  }
   renderHistory("hist-list","hist-best","start-history");
   renderHistory("hist-list2","hist-best2");
+  refreshLeaderboard();
+}
+async function recordAttempt(entry){
+  if(AUTH.user){
+    try{await api("/api/attempts",{method:"POST",body:JSON.stringify(entry)});}catch(e){}
+  }else{
+    const h=loadLocal();h.push(entry);saveLocal(h);
+  }
+  await refreshHistoryData();
+}
+async function clearHistory(){
+  if(AUTH.user){
+    try{await api("/api/history",{method:"DELETE"});}catch(e){}
+  }else{
+    saveLocal([]);
+  }
+  lastSavedId=null;
+  await refreshHistoryData();
+}
+
+/* ----- GLOBAL LEADERBOARD ----- */
+async function refreshLeaderboard(){
+  const wrap=$("lb-wrap");
+  if(!serverOK){wrap.classList.add("hide");return;}
+  try{
+    const rows=(await api("/api/leaderboard")).leaderboard||[];
+    wrap.classList.toggle("hide",rows.length===0);
+    const me=AUTH.user?AUTH.user.username:null;
+    $("lb-list").innerHTML=rows.map((r,i)=>`<div class="hist-row ${r.username===me?'top':''}">
+      <div class="rank">${i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</div>
+      <div class="when"><b>${esc(r.username)}</b>${r.username===me?'<span class="newbadge">YOU</span>':''}</div>
+      <div class="det">${r.attempts} run${r.attempts===1?"":"s"}</div>
+      <div class="pts">${r.bestScore} pts</div>
+      <div class="pct grad-text">${r.bestPct}%</div>
+    </div>`).join("");
+  }catch(e){wrap.classList.add("hide");}
+}
+
+/* ----- ADMIN: all applicants' results ----- */
+async function openAdmin(){
+  show("admin");
+  $("admin-list").innerHTML='<div class="hist-empty">Loading…</div>';
+  $("admin-stats").innerHTML="";
+  try{
+    const d=await api("/api/admin/results");
+    $("admin-stats").innerHTML=`Registered applicants: <b>${d.userCount}</b> &nbsp;·&nbsp; Attempts: <b>${d.results.length}</b>`;
+    if(!d.results.length){$("admin-list").innerHTML='<div class="hist-empty">No attempts recorded yet.</div>';return;}
+    $("admin-list").innerHTML=d.results.map(e=>{
+      const tname={manual:"🧪 Manual",auto:"🤖 Auto",all:"🌐 All"}[e.track||"manual"];
+      const lvmap={trainee:["TRAINEE","#9aa6d6"],junior:["JUNIOR","#3ff0a8"],middle:["MIDDLE","#46e6ff"],senior:["SENIOR","#9b6dff"],expert:["EXPERT","#ff6ad5"]};
+      const lc=lvmap[e.level||"middle"];
+      const hireTag=e.target&&e.target!=="any"
+        ?`<span class="tracktag" style="color:${e.hired?"var(--green)":"var(--red)"}">${e.hired?"✅ HIRED":"❌ NO HIRE"} · ${e.target.toUpperCase()}</span>`:"";
+      return `<div class="hist-row">
+        <div class="rank">${e.hired===true?"✅":e.hired===false?"❌":"•"}</div>
+        <div class="when"><b>${esc(e.username)}</b> · ${fmtDate(e.ts)}<span class="tracktag">${tname}</span>${e.mode==="interview"?'<span class="tracktag">🎙️ IV</span>':''}${hireTag}<span class="histlv" style="color:${lc[1]}">${lc[0]}</span></div>
+        <div class="det">${e.correct}/${e.total}</div>
+        <div class="pts">${e.score} pts</div>
+        <div class="pct grad-text">${e.pct}%</div>
+      </div>`;
+    }).join("");
+  }catch(e){$("admin-list").innerHTML='<div class="hist-empty">'+esc(e.message)+'</div>';}
 }
 function fmtDate(ts){
   const d=new Date(ts);
@@ -1091,7 +1303,7 @@ function fmtDate(ts){
          d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
 }
 function renderHistory(listId,bestId,wrapId){
-  const h=loadHistory();
+  const h=HISTORY;
   const wrap=wrapId?$(wrapId):null;
   if(wrap)wrap.classList.toggle("hide",h.length===0);
   const list=$(listId);
@@ -1114,7 +1326,7 @@ function renderHistory(listId,bestId,wrapId){
     const lc=lvmap[e.level||"middle"];
     return `<div class="hist-row ${isTop?'top':''}">
       <div class="rank">${isTop?'★':'•'}</div>
-      <div class="when">${fmtDate(e.ts)}<span class="tracktag">${tname}</span>${e.mode==="interview"?'<span class="tracktag">🎙️ IV</span>':''}<span class="histlv" style="color:${lc[1]}">${lc[0]}</span>${isNew?'<span class="newbadge">NEW</span>':''}</div>
+      <div class="when">${fmtDate(e.ts)}<span class="tracktag">${tname}</span>${e.mode==="interview"?'<span class="tracktag">🎙️ IV</span>':''}${e.target&&e.target!=="any"?`<span class="tracktag">${e.hired?"✅":"❌"} ${e.target.toUpperCase()}</span>`:''}<span class="histlv" style="color:${lc[1]}">${lc[0]}</span>${isNew?'<span class="newbadge">NEW</span>':''}</div>
       <div class="det">${e.correct}/${e.total} · 🔥${e.bestStreak}</div>
       <div class="pts">${e.score} pts</div>
       <div class="pct grad-text">${e.pct}%</div>
@@ -1127,7 +1339,8 @@ function refreshTrackUI(){
   $("t-manual").textContent=deckFor("manual").length+" Qs";
   $("t-auto").textContent=deckFor("auto").length+" Qs";
   $("t-all").textContent=deckFor("all").length+" Qs";
-  $("s-count").textContent=deckFor(selectedTrack).length;
+  LEVELS.forEach(l=>{$("l-"+l).textContent=levelDeckFor(selectedTrack,l).length+" Qs";});
+  $("s-count").textContent=activeDeck().length;
 }
 document.querySelectorAll("#tracks .track-btn").forEach(b=>{
   b.onclick=()=>{
@@ -1137,6 +1350,15 @@ document.querySelectorAll("#tracks .track-btn").forEach(b=>{
   };
 });
 refreshTrackUI();
+
+// ---- interview level selector ----
+document.querySelectorAll("#levels .track-btn").forEach(b=>{
+  b.onclick=()=>{
+    targetLevel=b.dataset.level;
+    document.querySelectorAll("#levels .track-btn").forEach(x=>x.classList.toggle("active",x===b));
+    refreshTrackUI();
+  };
+});
 
 // ---- mode selector (Practice / Interview Pressure) ----
 document.querySelectorAll("#modes .track-btn").forEach(b=>{
@@ -1160,6 +1382,20 @@ $("btn-clear-hist").onclick=clearHistory;
 $("btn-clear-hist2").onclick=clearHistory;
 $("btn-menu").onclick=goMenu;
 $("btn-menu2").onclick=goMenu;
+$("btn-admin-back").onclick=goMenu;
+
+// ---- auth screen wiring ----
+document.querySelectorAll("#auth-tabs .track-btn").forEach(b=>{
+  b.onclick=()=>{
+    authMode=b.dataset.auth;
+    document.querySelectorAll("#auth-tabs .track-btn").forEach(x=>x.classList.toggle("active",x===b));
+    $("btn-auth").textContent=authMode==="login"?"Sign In →":"Create Account →";
+    $("auth-pass").setAttribute("autocomplete",authMode==="login"?"current-password":"new-password");
+    $("auth-err").textContent="";
+  };
+});
+$("auth-form").onsubmit=e=>{e.preventDefault();submitAuth();};
+$("btn-guest").onclick=()=>{localStorage.setItem("qa_guest","1");enterApp();};
 
 function goMenu(){
   clearTimers();
@@ -1171,12 +1407,12 @@ function goMenu(){
   renderHistory("hist-list","hist-best","start-history");
 }
 
-// show history on the landing screen at load
-renderHistory("hist-list","hist-best","start-history");
+// boot: check the backend, restore the session, then land on auth or start
+initAuth();
 
 function start(){
   clearTimers();
-  DECK=deckFor(selectedTrack);
+  DECK=activeDeck();
   idx=0;score=0;streak=0;bestStreak=0;correctCount=0;results.length=0;
   timeouts=0;lookAways=0;
   if(mode==="interview"){
@@ -1295,9 +1531,9 @@ function finish(){
   const est=estimateExpertise();
   // save this attempt to persistent history
   lastSavedId=Date.now()+"-"+Math.random().toString(36).slice(2,7);
-  recordAttempt({id:lastSavedId,ts:Date.now(),score,correct:correctCount,total,pct,bestStreak,track:selectedTrack,level:est.reached,mode});
-  renderHistory("hist-list2","hist-best2");          // results screen
-  renderHistory("hist-list","hist-best","start-history"); // keep landing in sync
+  // save this attempt (server if signed in, localStorage otherwise); re-renders history + leaderboard when done
+  recordAttempt({id:lastSavedId,ts:Date.now(),score,correct:correctCount,total,pct,bestStreak,track:selectedTrack,level:est.reached,mode,
+    target:targetLevel,hired:targetLevel==="any"?null:LVL_RANK[est.reached]>=LVL_RANK[targetLevel]});
 
   // ring
   const r=78,circ=2*Math.PI*r;
@@ -1320,19 +1556,38 @@ function finish(){
     senior:"Impressive depth across advanced topics — you reason like a senior who can own quality strategy. Expert tier is within reach.",
     expert:"Outstanding — you handled expert-level material with command. This is lead / architect territory. 🛸"
   };
-  if(mode==="interview"){
+  const composure=` Composure: ${timeouts} timeout${timeouts===1?"":"s"}, ${lookAways} look-away${lookAways===1?"":"s"}, ${fmtMMSS(elapsed)} total.`;
+  if(targetLevel!=="any"){
+    // ---- HIRING DECISION for the level the applicant applied for ----
+    const hired=LVL_RANK[est.reached]>=LVL_RANK[targetLevel];
+    const over=LVL_RANK[est.reached]>LVL_RANK[targetLevel];
+    const perf=est.reached==="trainee"?"Trainee (below Junior)":LVL_NAME[est.reached];
+    $("res-h1").innerHTML='Hiring <span class="grad-text">Decision</span>';
+    $("res-grade").textContent=hired
+      ?`${over?"🌟":"✅"} HIRED · ${LVL_NAME[targetLevel]} ${trackWord}`
+      :`❌ NOT HIRED · ${LVL_NAME[targetLevel]} ${trackWord}`;
+    $("res-grade").className="grade "+(hired?"level-"+targetLevel:"level-fail");
+    let msg=`You applied for the ${LVL_NAME[targetLevel]} position and performed at ${perf} level. `;
+    msg+=hired
+      ?(over?`Offer extended — you cleared the bar with room to spare. Consider applying for ${perf} next time. 🚀`
+             :"Offer extended — you met the bar for this role. 🎉")
+      :`The ${LVL_NAME[targetLevel]} bar wasn't met this time — review the tiers below, close the gaps, and reapply.`;
+    if(mode==="interview")msg+=` "${pick(hired?IV.close_good:IV.close_bad)}" —`+composure;
+    $("res-verdict").textContent=msg+(est.note?" "+est.note:"");
+    if(hired)celebrate();
+  }else if(mode==="interview"){
     const decisions={trainee:"❌ No Hire",junior:"✅ Hire · Junior",middle:"✅ Hire · Mid-Level",senior:"🌟 Strong Hire · Senior",expert:"🏆 Strong Hire · Lead"};
     const closePool=est.reached==="trainee"?IV.close_bad:(est.reached==="senior"||est.reached==="expert")?IV.close_good:IV.close_mid;
     $("res-grade").textContent=decisions[est.reached];
     $("res-grade").className="grade level-"+est.reached;
-    $("res-verdict").textContent=`Estimated level: ${titles[est.reached]}. "${pick(closePool)}" — Composure: ${timeouts} timeout${timeouts===1?"":"s"}, ${lookAways} look-away${lookAways===1?"":"s"}, ${fmtMMSS(elapsed)} total.`+(est.note?" "+est.note:"");
+    $("res-verdict").textContent=`Estimated level: ${titles[est.reached]}. "${pick(closePool)}" —`+composure+(est.note?" "+est.note:"");
   }else{
     $("res-grade").textContent=titles[est.reached];
     $("res-grade").className="grade level-"+est.reached;
     $("res-verdict").textContent=verdicts[est.reached]+(est.note?" "+est.note:"");
   }
   renderTiers(est);
-  if(est.reached==="senior"||est.reached==="expert")celebrate();
+  if(targetLevel==="any"&&(est.reached==="senior"||est.reached==="expert"))celebrate();
 
   // review
   const list=$("review-list");list.innerHTML="";
@@ -1426,15 +1681,17 @@ function advanceSoon(){
 const TIER_ORDER=["junior","middle","senior","expert"];
 let activeThresh=0.6; const MINQ=2;
 function estimateExpertise(){
-  const per={};TIER_ORDER.forEach(l=>per[l]={c:0,t:0});
-  results.forEach(r=>{const l=per[r.lvl]?r.lvl:"middle";per[l].t++;if(r.ok)per[l].c++;});
+  // only assess tiers included in this interview (up to the applied-for level)
+  const order=targetLevel==="any"?TIER_ORDER:TIER_ORDER.slice(0,TIER_RANK[targetLevel]+1);
+  const per={};order.forEach(l=>per[l]={c:0,t:0});
+  results.forEach(r=>{const l=per[r.lvl]?r.lvl:order[order.length-1];per[l].t++;if(r.ok)per[l].c++;});
   let reached="trainee", note="";
-  for(const tier of TIER_ORDER){
+  for(const tier of order){
     const d=per[tier];
     if(d.t<MINQ){note="(Not enough "+tier+"-tier questions in this set to assess further.)";break;}
     if(d.c/d.t>=activeThresh){reached=tier;} else {break;}
   }
-  return {per,order:TIER_ORDER,reached,note};
+  return {per,order,reached,note};
 }
 function renderTiers(est){
   const names={junior:"Junior",middle:"Middle",senior:"Senior",expert:"Expert"};
