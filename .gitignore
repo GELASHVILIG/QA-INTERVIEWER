@@ -16,3 +16,9 @@ _*.cjs
 
 # Backend data (user accounts & results)
 data.json
+
+# test artifacts
+node_modules/
+test-results/
+playwright-report/
+tests/e2e/.tmp/
