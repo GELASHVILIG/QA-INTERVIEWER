@@ -1125,7 +1125,7 @@ const $ = id => document.getElementById(id);
 let idx=0, score=0, streak=0, bestStreak=0, correctCount=0, answered=false;
 let selectedTrack="manual", targetLevel="any", DECK=[];
 let mode="practice";
-let qTimer=null, totalTimer=null, typeTimer=null, qLeft=0, qMax=0, elapsed=0;
+let qTimer=null, totalTimer=null, typeTimer=null, advTimer=null, qLeft=0, qMax=0, elapsed=0;
 let timeouts=0, lookAways=0, soundOn=true, audioCtx=null;
 const TIER_TIME={junior:50, middle:60, senior:70, expert:80}; // seconds per tier (~1 min, scales with difficulty)
 const TIER_RANK={junior:0, middle:1, senior:2, expert:3};
@@ -1197,6 +1197,7 @@ async function logout(){
   try{await api("/api/logout",{method:"POST"});}catch(e){}
   AUTH.token=null;AUTH.user=null;
   localStorage.removeItem("qa_token");localStorage.removeItem("qa_guest");
+  $("auth-err").textContent="";               // don't show a stale error from a previous attempt
   show("auth");
 }
 
@@ -1410,13 +1411,19 @@ function goMenu(){
 // boot: check the backend, restore the session, then land on auth or start
 initAuth();
 
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
 function start(){
   clearTimers();
-  DECK=activeDeck();
+  DECK=shuffle(activeDeck());              // fresh random order every run
   idx=0;score=0;streak=0;bestStreak=0;correctCount=0;results.length=0;
   timeouts=0;lookAways=0;
   if(mode==="interview"){
-    DECK.sort((a,b)=>TIER_RANK[a.lvl]-TIER_RANK[b.lvl]);   // escalating difficulty
+    // escalating difficulty (stable sort keeps the shuffle within each tier)
+    DECK.sort((a,b)=>TIER_RANK[a.lvl||"middle"]-TIER_RANK[b.lvl||"middle"]);
     document.body.classList.add("interview");
     elapsed=0;updateClock();
     totalTimer=setInterval(()=>{elapsed++;updateClock();},1000);
@@ -1641,6 +1648,7 @@ const buzzer=()=>beep(150,0.5,"sawtooth",0.09);
 function clearTimers(){
   if(qTimer){clearInterval(qTimer);qTimer=null;}
   if(totalTimer){clearInterval(totalTimer);totalTimer=null;}
+  if(advTimer){clearTimeout(advTimer);advTimer=null;}   // cancel pending auto-advance
   $("vignette").classList.remove("on");
 }
 const fmtMMSS=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
@@ -1668,7 +1676,9 @@ function onTimeout(){
   advanceSoon();
 }
 function advanceSoon(){
-  setTimeout(()=>{
+  if(advTimer)clearTimeout(advTimer);
+  advTimer=setTimeout(()=>{
+    advTimer=null;
     if(screens.quiz.classList.contains("hide"))return;   // user left to menu — abort
     if(idx<DECK.length-1){idx++;render();} else finish();
   },1100);

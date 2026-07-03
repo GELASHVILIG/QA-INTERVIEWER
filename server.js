@@ -35,12 +35,21 @@ function checkPw(user, pw) {
   const b = Buffer.from(user.hash, "hex");
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
+function pruneSessions() {
+  const now = Date.now();
+  let dropped = 0;
+  for (const t in db.sessions)
+    if (now - db.sessions[t].ts > SESSION_TTL) { delete db.sessions[t]; dropped++; }
+  if (dropped) save();
+}
 function newSession(username) {
+  pruneSessions();                              // keep data.json from growing forever
   const token = crypto.randomBytes(24).toString("hex");
   db.sessions[token] = { u: username, ts: Date.now() };
   save();
   return token;
 }
+setInterval(pruneSessions, 6 * 3600 * 1000).unref();
 function userFor(req) {
   const m = /^Bearer\s+([a-f0-9]{48})$/.exec(req.headers.authorization || "");
   if (!m) return null;
